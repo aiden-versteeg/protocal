@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Daily Protocol & Drone Sprints</title>
   
-  <!-- iOS PWA full-screen meta tags -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Protocol" />
@@ -26,13 +25,10 @@
     input, textarea, button {
       outline: none;
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
+    .locked-overlay {
+      pointer-events: none;
+      opacity: 0.45;
+      filter: grayscale(0.6);
     }
   </style>
 </head>
@@ -68,7 +64,7 @@
   </header>
 
   <!-- DATE CONTROLS -->
-  <div id="dateSelectorBar" class="flex items-center justify-between bg-slate-900/60 border border-slate-800/80 rounded-xl px-3 py-2 mb-5 backdrop-blur-sm">
+  <div id="dateSelectorBar" class="flex items-center justify-between bg-slate-900/60 border border-slate-800/80 rounded-xl px-3 py-2 mb-3 backdrop-blur-sm">
     <button onclick="shiftDate(-1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition">
       <i data-lucide="chevron-left" class="w-5 h-5"></i>
     </button>
@@ -79,6 +75,12 @@
     <button onclick="shiftDate(1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition">
       <i data-lucide="chevron-right" class="w-5 h-5"></i>
     </button>
+  </div>
+
+  <!-- FUTURE LOCK BANNER -->
+  <div id="futureLockBanner" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold">
+    <i data-lucide="lock" class="w-4 h-4 text-amber-400 shrink-0"></i>
+    <span>Future Date Locked: You cannot mark habits or edit entries ahead of time.</span>
   </div>
 
   <!-- VIEW CONTAINER: DAILY TAB -->
@@ -100,162 +102,152 @@
       </div>
     </div>
 
-    <!-- OBJECTIVE CARD: DRONE SPRINT (5x / WEEK) -->
-    <div class="relative overflow-hidden bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-lg">
-            🚁
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hour • 5x/wk</span>
+    <!-- WRAPPER THAT RECEIVES .locked-overlay IF FUTURE -->
+    <div id="interactiveContent" class="space-y-5">
+
+      <!-- OBJECTIVE CARD: DRONE SPRINT (5x / WEEK) -->
+      <div class="relative overflow-hidden bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-lg">
+              🚁
             </div>
-            <p id="droneWeeklyStatus" class="text-xs text-slate-400 mt-0.5">This Week: 0 / 5 sessions logged</p>
-          </div>
-        </div>
-
-        <button id="droneTodayBtn" onclick="toggleDroneSprint()" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300">
-          <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-          <span>Log 1 Hr</span>
-        </button>
-      </div>
-
-      <!-- Weekly Progress Pips -->
-      <div class="mt-3.5 flex items-center gap-1.5">
-        <div id="dronePip1" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-        <div id="dronePip2" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-        <div id="dronePip3" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-        <div id="dronePip4" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-        <div id="dronePip5" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-      </div>
-
-      <!-- Optional Build Notes -->
-      <div class="mt-3 pt-3 border-t border-slate-800/80">
-        <input 
-          type="text" 
-          id="droneNotes" 
-          placeholder="Session notes (e.g. Flight controller wiring, ESC soldering, CAD chassis)..."
-          oninput="saveDroneNotes(this.value)"
-          class="w-full bg-slate-950/60 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500"
-        />
-      </div>
-    </div>
-
-    <!-- WATER BOTTLE TRACKER (1.0L & 710ML) -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-            <i data-lucide="droplet" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Hydration Bottles</h2>
-            <div class="text-[11px] text-slate-400">Target: 4+ Liters (4,000 ml) + Electrolytes</div>
-          </div>
-        </div>
-        <div id="waterStatusTag" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-          0%
-        </div>
-      </div>
-
-      <!-- Water Progress Bar -->
-      <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden mb-4">
-        <div id="waterFillBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div>
-      </div>
-
-      <!-- Bottles Grid -->
-      <div class="grid grid-cols-2 gap-3">
-        <!-- 1.0 Liter Bottle -->
-        <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
-          <div class="flex items-center justify-between">
             <div>
-              <div class="text-xs font-bold text-slate-200">1.0L Bottle</div>
-              <div class="text-[10px] text-slate-400">1,000 ml</div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hour • 5x/wk</span>
+              </div>
+              <p id="droneWeeklyStatus" class="text-xs text-slate-400 mt-0.5">This Week: 0 / 5 sessions logged</p>
             </div>
-            <div id="count1000" class="text-lg font-extrabold text-cyan-400">0x</div>
           </div>
-          <div class="flex items-center gap-2 mt-3">
-            <button onclick="decrementBottle('b1000')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">
-              -
-            </button>
-            <button onclick="incrementBottle('b1000')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">
-              + Finished 1L
-            </button>
-          </div>
+
+          <button id="droneTodayBtn" onclick="toggleDroneSprint()" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+            <span>Log 1 Hr</span>
+          </button>
         </div>
 
-        <!-- 710 ml Bottle -->
-        <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
-          <div class="flex items-center justify-between">
+        <!-- Weekly Progress Pips -->
+        <div class="mt-3.5 flex items-center gap-1.5">
+          <div id="dronePip1" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
+          <div id="dronePip2" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
+          <div id="dronePip3" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
+          <div id="dronePip4" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
+          <div id="dronePip5" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
+        </div>
+
+        <!-- Optional Build Notes -->
+        <div class="mt-3 pt-3 border-t border-slate-800/80">
+          <input 
+            type="text" 
+            id="droneNotes" 
+            placeholder="Session notes (e.g. Flight controller wiring, ESC soldering, CAD chassis)..."
+            oninput="saveDroneNotes(this.value)"
+            class="w-full bg-slate-950/60 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500"
+          />
+        </div>
+      </div>
+
+      <!-- WATER BOTTLE TRACKER (1.0L & 710ML) -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <i data-lucide="droplet" class="w-4 h-4"></i>
+            </div>
             <div>
-              <div class="text-xs font-bold text-slate-200">710ml Bottle</div>
-              <div class="text-[10px] text-slate-400">710 ml</div>
+              <h2 class="text-sm font-bold text-white">Hydration Bottles</h2>
+              <div class="text-[11px] text-slate-400">Target: 4+ Liters (4,000 ml) + Electrolytes</div>
             </div>
-            <div id="count710" class="text-lg font-extrabold text-cyan-400">0x</div>
           </div>
-          <div class="flex items-center gap-2 mt-3">
-            <button onclick="decrementBottle('b710')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">
-              -
-            </button>
-            <button onclick="incrementBottle('b710')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">
-              + Finished 710ml
-            </button>
+          <div id="waterStatusTag" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+            0%
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ZERO TOLERANCE BOUNDARIES -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
-            <i data-lucide="shield-alert" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Avoidance Boundaries</h2>
-            <div class="text-[11px] text-slate-400">Defaults to Clean • Tap "Fail" if breached</div>
-          </div>
+        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden mb-4">
+          <div id="waterFillBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div>
         </div>
-      </div>
 
-      <div id="boundariesList" class="space-y-2"></div>
-    </div>
-
-    <!-- DAILY ACTION PROTOCOL -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-slate-200">1.0L Bottle</div>
+                <div class="text-[10px] text-slate-400">1,000 ml</div>
+              </div>
+              <div id="count1000" class="text-lg font-extrabold text-cyan-400">0x</div>
+            </div>
+            <div class="flex items-center gap-2 mt-3">
+              <button onclick="decrementBottle('b1000')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">-</button>
+              <button onclick="incrementBottle('b1000')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">+ Finished 1L</button>
+            </div>
           </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Daily Actions & Hypertrophy</h2>
-            <div class="text-[11px] text-slate-400">Complete daily targets</div>
+
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-slate-200">710ml Bottle</div>
+                <div class="text-[10px] text-slate-400">710 ml</div>
+              </div>
+              <div id="count710" class="text-lg font-extrabold text-cyan-400">0x</div>
+            </div>
+            <div class="flex items-center gap-2 mt-3">
+              <button onclick="decrementBottle('b710')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">-</button>
+              <button onclick="incrementBottle('b710')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">+ Finished 710ml</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div id="actionsList" class="space-y-2"></div>
-    </div>
-
-    <!-- SMART MEAL TRACKER & PROTEIN ESTIMATOR -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <i data-lucide="utensils" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Daily Meal Tracker</h2>
-            <div class="text-[11px] text-slate-400">Smart protein parsing per meal</div>
+      <!-- ZERO TOLERANCE BOUNDARIES -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+              <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Avoidance Boundaries</h2>
+              <div class="text-[11px] text-slate-400">Defaults to Clean • Tap "Fail" if breached</div>
+            </div>
           </div>
         </div>
+        <div id="boundariesList" class="space-y-2"></div>
       </div>
 
-      <div id="mealsContainer" class="space-y-3"></div>
+      <!-- DAILY ACTION PROTOCOL -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Daily Actions & Hypertrophy</h2>
+              <div class="text-[11px] text-slate-400">Complete daily targets</div>
+            </div>
+          </div>
+        </div>
+        <div id="actionsList" class="space-y-2"></div>
+      </div>
+
+      <!-- SMART MEAL TRACKER & PROTEIN ESTIMATOR -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <i data-lucide="utensils" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Daily Meal Tracker</h2>
+              <div class="text-[11px] text-slate-400">Smart protein parsing per meal</div>
+            </div>
+          </div>
+        </div>
+        <div id="mealsContainer" class="space-y-3"></div>
+      </div>
+
     </div>
 
   </div>
@@ -266,15 +258,15 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-base font-bold text-white" id="monthCalendarTitle">Month</h2>
-          <div class="text-xs text-slate-400">Monthly adherence & consistency overview</div>
+          <div class="text-xs text-slate-400">Past & current day status</div>
         </div>
         <div class="flex items-center gap-1.5 text-xs">
           <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Clean</span>
-          <span class="flex items-center gap-1 text-rose-400 font-semibold ml-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Breached</span>
+          <span class="flex items-center gap-1 text-rose-400 font-semibold ml-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Breach</span>
+          <span class="flex items-center gap-1 text-slate-500 font-semibold ml-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-800"></span>Locked</span>
         </div>
       </div>
 
-      <!-- Calendar Matrix -->
       <div class="grid grid-cols-7 gap-1.5 text-center text-xs text-slate-500 font-bold mb-2">
         <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
       </div>
@@ -284,9 +276,9 @@
     <!-- Monthly KPIs -->
     <div class="grid grid-cols-2 gap-3">
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Monthly Drone Sessions</div>
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Drone Hours</div>
         <div id="monthlyDroneCount" class="text-2xl font-black text-indigo-400">0 hrs</div>
-        <div class="text-[11px] text-slate-500 mt-1">Benchmark: 20 sessions / month</div>
+        <div class="text-[11px] text-slate-500 mt-1">Goal: 20 hrs / month</div>
       </div>
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Clean Adherence</div>
@@ -299,7 +291,6 @@
 </div>
 
 <script>
-  // DIRECTIVES & CONFIGURATION
   const BOUNDARIES = [
     { id: "b_sugar", label: "No Sugar", desc: "Zero added sugar or sweets" },
     { id: "b_porn", label: "No Porn", desc: "Absolute boundary" },
@@ -330,7 +321,6 @@
     { id: "m_snacks", label: "Post-Workout / Snacks" }
   ];
 
-  // STATE & STORAGE
   let currentDate = new Date();
   let currentTab = 'daily';
   let appData = JSON.parse(localStorage.getItem('protocol_master_data') || '{}');
@@ -339,18 +329,26 @@
     return date.toISOString().slice(0, 10);
   }
 
+  function isDateInFuture(date) {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(date);
+    target.setHours(0,0,0,0);
+    return target > today;
+  }
+
   function getDayRecord(dateKey) {
     if (!appData[dateKey]) {
       appData[dateKey] = {
-        boundaries: {}, // id: boolean (true = failed)
-        actions: {},    // id: boolean (true = done)
+        boundaries: {},
+        actions: {},
         water: { b1000: 0, b710: 0 },
         drone: { done: false, notes: '' },
         meals: {
-          m_breakfast: { text: '', protein: 0, wholeFuel: true },
-          m_lunch: { text: '', protein: 0, wholeFuel: true },
-          m_dinner: { text: '', protein: 0, wholeFuel: true },
-          m_snacks: { text: '', protein: 0, wholeFuel: true }
+          m_breakfast: { text: '', protein: 0 },
+          m_lunch: { text: '', protein: 0 },
+          m_dinner: { text: '', protein: 0 },
+          m_snacks: { text: '', protein: 0 }
         }
       };
     }
@@ -362,7 +360,6 @@
     render();
   }
 
-  // NAVIGATION
   function shiftDate(days) {
     currentDate.setDate(currentDate.getDate() + days);
     render();
@@ -385,8 +382,8 @@
     render();
   }
 
-  // WATER LOGIC
   function incrementBottle(type) {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     rec.water[type] = (rec.water[type] || 0) + 1;
@@ -395,6 +392,7 @@
   }
 
   function decrementBottle(type) {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     if ((rec.water[type] || 0) > 0) {
@@ -408,11 +406,10 @@
     return ((water.b1000 || 0) * 1000) + ((water.b710 || 0) * 710);
   }
 
-  // DRONE 5X / WEEK LOGIC
   function getWeekDateKeys(d) {
     const current = new Date(d);
     const day = current.getDay();
-    const diff = current.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+    const diff = current.getDate() - day + (day === 0 ? -6 : 1);
     const monday = new Date(current.setDate(diff));
     const keys = [];
     for (let i = 0; i < 7; i++) {
@@ -431,6 +428,7 @@
   }
 
   function toggleDroneSprint() {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     rec.drone.done = !rec.drone.done;
@@ -439,37 +437,30 @@
   }
 
   function saveDroneNotes(val) {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     rec.drone.notes = val;
     localStorage.setItem('protocol_master_data', JSON.stringify(appData));
   }
 
-  // NATURAL LANGUAGE PROTEIN ESTIMATOR
   function estimateProteinFromText(str) {
     if (!str) return 0;
     const lower = str.toLowerCase();
     let total = 0;
 
-    // Direct gram mentions (e.g. "40g protein")
     const gramMatch = lower.match(/(\d+)\s*g\b/);
     if (gramMatch) return parseInt(gramMatch[1], 10);
 
-    // Weights: e.g. 8oz chicken
     const ozMatch = lower.match(/(\d+(\.\d+)?)\s*oz\s*(chicken|beef|steak|turkey|salmon|tuna|meat|fish)/);
-    if (ozMatch) {
-      total += Math.round(parseFloat(ozMatch[1]) * 7); // ~7g protein per cooked oz
-    }
+    if (ozMatch) total += Math.round(parseFloat(ozMatch[1]) * 7);
 
-    // Eggs
     const eggMatch = lower.match(/(\d+)\s*(whole\s*)?eggs?/);
     if (eggMatch) total += parseInt(eggMatch[1], 10) * 6;
 
-    // Scoops of whey / protein powder
     const scoopMatch = lower.match(/(\d+)\s*scoops?/);
     if (scoopMatch) total += parseInt(scoopMatch[1], 10) * 25;
 
-    // Keyword heuristics
     if (lower.includes("greek yogurt")) total += 18;
     if (lower.includes("fairlife")) total += 30;
     if (lower.includes("protein bar")) total += 20;
@@ -481,6 +472,7 @@
   }
 
   function updateMeal(mealId, field, value) {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     rec.meals[mealId][field] = value;
@@ -494,29 +486,22 @@
     persist();
   }
 
-  // AUTOMATIONS
   function syncAutomations(rec) {
-    // Water auto-check
     const vol = getWaterVolume(rec.water);
     rec.actions['a_water'] = vol >= 4000;
-
-    // Drone auto-check
     rec.actions['a_drone'] = !!rec.drone.done;
-
-    // Protein auto-check (target 160g)
     const totalP = Object.values(rec.meals).reduce((s, m) => s + (Number(m.protein) || 0), 0);
     rec.actions['a_protein'] = totalP >= 160;
   }
 
-  // RENDER PIPELINE
   function render() {
+    const isFuture = isDateInFuture(currentDate);
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     syncAutomations(rec);
 
     const isWeekend = (currentDate.getDay() === 0 || currentDate.getDay() === 6);
 
-    // Date Labels
     document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString(undefined, {
       weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
     });
@@ -525,13 +510,18 @@
     });
     document.getElementById('dayBadge').innerText = isWeekend ? 'Weekend' : 'Weekday';
 
-    // RENDER BOUNDARIES
+    // Lock banner & overlay
+    document.getElementById('futureLockBanner').classList.toggle('hidden', !isFuture);
+    const contentWrap = document.getElementById('interactiveContent');
+    contentWrap.className = isFuture ? 'space-y-5 locked-overlay' : 'space-y-5';
+
+    // Boundaries
     const boundsContainer = document.getElementById('boundariesList');
     boundsContainer.innerHTML = '';
     let breachCount = 0;
 
     BOUNDARIES.forEach(b => {
-      const isFailed = !!rec.boundaries[b.id];
+      const isFailed = !isFuture && !!rec.boundaries[b.id];
       if (isFailed) breachCount++;
 
       const div = document.createElement('div');
@@ -545,10 +535,10 @@
           <div class="text-[10px] text-slate-400">${b.desc}</div>
         </div>
         <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 p-1 rounded-lg">
-          <button onclick="setBoundary('${b.id}', false)" class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
-            !isFailed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'
+          <button onclick="setBoundary('${b.id}', false)" ${isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
+            !isFailed && !isFuture ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'
           }">Clean</button>
-          <button onclick="setBoundary('${b.id}', true)" class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
+          <button onclick="setBoundary('${b.id}', true)" ${isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
             isFailed ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-500 hover:text-rose-400'
           }">Fail</button>
         </div>
@@ -556,18 +546,23 @@
       boundsContainer.appendChild(div);
     });
 
-    document.getElementById('boundaryScore').innerText = breachCount === 0 ? 'All Clean ✓' : `${breachCount} Breached`;
-    document.getElementById('boundaryScore').className = breachCount === 0 ? 'text-base font-bold text-emerald-400' : 'text-base font-bold text-rose-400';
+    if (isFuture) {
+      document.getElementById('boundaryScore').innerText = 'Locked';
+      document.getElementById('boundaryScore').className = 'text-base font-bold text-slate-500';
+    } else {
+      document.getElementById('boundaryScore').innerText = breachCount === 0 ? 'All Clean ✓' : `${breachCount} Breached`;
+      document.getElementById('boundaryScore').className = breachCount === 0 ? 'text-base font-bold text-emerald-400' : 'text-base font-bold text-rose-400';
+    }
 
-    // RENDER ACTIONS
+    // Actions
     const actionsContainer = document.getElementById('actionsList');
     actionsContainer.innerHTML = '';
 
     ACTIONS.forEach(a => {
-      const isChecked = !!rec.actions[a.id];
+      const isChecked = !isFuture && !!rec.actions[a.id];
       const div = document.createElement('label');
-      div.className = `flex items-center justify-between p-3 rounded-xl border cursor-pointer transition ${
-        isChecked ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+      div.className = `flex items-center justify-between p-3 rounded-xl border transition ${
+        isFuture ? 'bg-slate-950/40 border-slate-800' : (isChecked ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/40 border-slate-800')
       }`;
 
       let extraBadge = '';
@@ -577,18 +572,18 @@
 
       div.innerHTML = `
         <div class="flex items-center gap-3">
-          <input type="checkbox" ${isChecked ? 'checked' : ''} ${a.isWaterLinked || a.isDroneLinked || a.isProteinLinked ? 'disabled' : ''} class="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 accent-emerald-500" />
+          <input type="checkbox" ${isChecked ? 'checked' : ''} ${isFuture || a.isWaterLinked || a.isDroneLinked || a.isProteinLinked ? 'disabled' : ''} class="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 accent-emerald-500" />
           <div>
             <div class="text-xs font-bold text-slate-200 flex items-center">${a.label} ${extraBadge}</div>
             <div class="text-[10px] text-slate-400">${a.desc}</div>
           </div>
         </div>
         <div class="text-[11px] font-bold ${isChecked ? 'text-emerald-400' : 'text-slate-500'}">
-          ${isChecked ? 'Done' : 'Pending'}
+          ${isFuture ? 'Locked' : (isChecked ? 'Done' : 'Pending')}
         </div>
       `;
 
-      if (!a.isWaterLinked && !a.isDroneLinked && !a.isProteinLinked) {
+      if (!isFuture && !a.isWaterLinked && !a.isDroneLinked && !a.isProteinLinked) {
         div.querySelector('input').addEventListener('change', (e) => {
           rec.actions[a.id] = e.target.checked;
           persist();
@@ -598,42 +593,37 @@
       actionsContainer.appendChild(div);
     });
 
-    // RENDER WATER
-    const waterVol = getWaterVolume(rec.water);
+    // Water
+    const waterVol = isFuture ? 0 : getWaterVolume(rec.water);
     document.getElementById('kpiWaterTotal').innerText = `${waterVol.toLocaleString()} ml`;
-    document.getElementById('count1000').innerText = `${rec.water.b1000 || 0}x`;
-    document.getElementById('count710').innerText = `${rec.water.b710 || 0}x`;
+    document.getElementById('count1000').innerText = `${isFuture ? 0 : (rec.water.b1000 || 0)}x`;
+    document.getElementById('count710').innerText = `${isFuture ? 0 : (rec.water.b710 || 0)}x`;
     const waterPct = Math.min(100, Math.round((waterVol / 4000) * 100));
     document.getElementById('waterFillBar').style.width = `${waterPct}%`;
     document.getElementById('waterStatusTag').innerText = `${waterPct}% (${waterVol}/4000 ml)`;
-    document.getElementById('waterStatusTag').className = waterVol >= 4000 
-      ? 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-      : 'text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700';
 
-    // RENDER DRONE SPRINT (5X/WK)
+    // Drone
     const weekCount = getWeeklyDroneCount(currentDate);
-    const droneToday = !!rec.drone.done;
+    const droneToday = !isFuture && !!rec.drone.done;
     document.getElementById('droneWeeklyStatus').innerText = `This Week: ${weekCount} / 5 sessions logged`;
     document.getElementById('droneTodayBtn').className = droneToday
-      ? 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-400 shadow-lg shadow-indigo-600/30'
-      : 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300 hover:border-slate-600';
+      ? 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-400'
+      : 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300';
     document.getElementById('droneTodayBtn').innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i><span>${droneToday ? '1 Hr Done ✓' : 'Log 1 Hr'}</span>`;
-    document.getElementById('droneNotes').value = rec.drone.notes || '';
+    document.getElementById('droneNotes').value = isFuture ? '' : (rec.drone.notes || '');
 
     for (let p = 1; p <= 5; p++) {
       const pip = document.getElementById(`dronePip${p}`);
-      pip.className = p <= weekCount 
-        ? 'h-1.5 flex-1 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50' 
-        : 'h-1.5 flex-1 rounded-full bg-slate-800';
+      pip.className = p <= weekCount ? 'h-1.5 flex-1 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50' : 'h-1.5 flex-1 rounded-full bg-slate-800';
     }
 
-    // RENDER MEALS
+    // Meals
     const mealsContainer = document.getElementById('mealsContainer');
     mealsContainer.innerHTML = '';
     let totalP = 0;
 
     MEALS.forEach(m => {
-      const mData = rec.meals[m.id] || { text: '', protein: 0, wholeFuel: true };
+      const mData = isFuture ? { text: '', protein: 0 } : (rec.meals[m.id] || { text: '', protein: 0 });
       totalP += Number(mData.protein) || 0;
 
       const card = document.createElement('div');
@@ -646,6 +636,7 @@
             <input 
               type="number" 
               value="${mData.protein || ''}" 
+              ${isFuture ? 'disabled' : ''}
               placeholder="0"
               onchange="updateMeal('${m.id}', 'protein', parseInt(this.value, 10) || 0)"
               class="w-14 bg-slate-900 border border-slate-800 rounded px-1.5 py-0.5 text-xs text-amber-400 font-bold text-right"
@@ -657,14 +648,15 @@
           <input 
             type="text" 
             value="${mData.text || ''}" 
+            ${isFuture ? 'disabled' : ''}
             placeholder="e.g. 8oz chicken breast, 4 eggs, rice..."
             onchange="updateMeal('${m.id}', 'text', this.value)"
             class="flex-1 bg-slate-900/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600"
           />
           <button 
             type="button"
+            ${isFuture ? 'disabled' : ''}
             onclick="quickParseMeal('${m.id}')"
-            title="Auto estimate protein from text"
             class="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-amber-300 rounded-lg border border-slate-700 transition"
           >
             ⚡ Est
@@ -676,7 +668,6 @@
 
     document.getElementById('kpiProteinTotal').innerText = `${totalP}g / 160g`;
 
-    // RENDER MONTHLY CALENDAR
     if (currentTab === 'monthly') {
       renderMonthlyCalendar();
     }
@@ -685,6 +676,7 @@
   }
 
   function setBoundary(bId, val) {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     rec.boundaries[bId] = val;
@@ -692,6 +684,7 @@
   }
 
   function quickParseMeal(mealId) {
+    if (isDateInFuture(currentDate)) return;
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     const text = rec.meals[mealId].text;
@@ -720,7 +713,6 @@
     let breachedDays = 0;
     let evaluatedDays = 0;
 
-    // Pad beginning of month to Monday
     let dayOffset = firstDay.getDay() - 1;
     if (dayOffset === -1) dayOffset = 6;
     for (let i = 0; i < dayOffset; i++) {
@@ -729,9 +721,9 @@
       grid.appendChild(empty);
     }
 
-    // Render Days
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const thisDate = new Date(year, month, d);
+      const isFuture = isDateInFuture(thisDate);
       const k = getDayKey(thisDate);
       const rec = appData[k];
 
@@ -741,12 +733,17 @@
         switchTab('daily');
       };
 
-      let bg = 'bg-slate-900/60 border-slate-800 text-slate-400';
+      let bg = 'bg-slate-900/40 border-slate-800/80 text-slate-500';
       let iconBadge = '';
 
-      if (rec) {
+      if (isFuture) {
+        // Locked future tile: never green, never evaluated
+        bg = 'bg-slate-950/60 border-slate-900 text-slate-600 opacity-60 cursor-not-allowed';
+        iconBadge = '<span class="text-[7px] text-slate-600 absolute top-0.5 right-1">🔒</span>';
+      } else {
         evaluatedDays++;
-        const hasBreach = Object.values(rec.boundaries || {}).some(v => v === true);
+        const hasBreach = rec && Object.values(rec.boundaries || {}).some(v => v === true);
+
         if (hasBreach) {
           bg = 'bg-rose-950/40 border-rose-600/50 text-rose-300 font-bold';
           breachedDays++;
@@ -754,7 +751,7 @@
           bg = 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300 font-bold';
         }
 
-        if (rec.drone?.done) {
+        if (rec?.drone?.done) {
           droneTotalHours++;
           iconBadge = '<span class="text-[8px] absolute top-0.5 right-0.5">🚁</span>';
         }
@@ -771,7 +768,6 @@
     document.getElementById('monthlyAdherence').innerText = `${adherence}%`;
   }
 
-  // EXPORT / IMPORT
   function exportData() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
     const a = document.createElement('a');
@@ -799,7 +795,6 @@
     reader.readAsText(file);
   }
 
-  // INITIALIZE
   render();
 </script>
 </body>
