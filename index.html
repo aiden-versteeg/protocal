@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Daily Protocol & Drone Sprints</title>
+  <title>Daily Protocol & Nutrition Suite</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -22,13 +22,11 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    input, textarea, button {
-      outline: none;
-    }
+    input, textarea, button { outline: none; }
     .locked-overlay {
       pointer-events: none;
-      opacity: 0.45;
-      filter: grayscale(0.6);
+      opacity: 0.40;
+      filter: grayscale(0.7);
     }
   </style>
 </head>
@@ -36,22 +34,25 @@
 
 <div class="w-full max-w-xl px-4 pt-6">
 
-  <!-- TOP HEADER & NAVIGATION -->
-  <header class="flex items-center justify-between mb-5">
+  <!-- TOP HEADER & CONTROLS -->
+  <header class="flex items-center justify-between mb-4">
     <div>
       <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
         Daily Protocol
       </h1>
-      <div id="dateDisplay" class="text-xs text-slate-400 font-medium tracking-wide uppercase mt-0.5"></div>
+      <div id="protocolStartNotice" class="text-[11px] text-emerald-400 font-semibold tracking-wide mt-0.5"></div>
     </div>
     
     <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 p-1 rounded-xl shadow-lg">
-      <button id="tabDailyBtn" onclick="switchTab('daily')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+      <button id="tabDailyBtn" onclick="switchTab('daily')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
         Today
       </button>
-      <button id="tabMonthlyBtn" onclick="switchTab('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">
+      <button id="tabMonthlyBtn" onclick="switchTab('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200">
         Monthly
+      </button>
+      <button onclick="toggleSettingsModal()" title="Macro Goals & AI Settings" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg">
+        <i data-lucide="settings" class="w-4 h-4"></i>
       </button>
       <button onclick="exportData()" title="Backup JSON" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg">
         <i data-lucide="download" class="w-4 h-4"></i>
@@ -63,7 +64,7 @@
     </div>
   </header>
 
-  <!-- DATE CONTROLS -->
+  <!-- DATE NAVIGATION -->
   <div id="dateSelectorBar" class="flex items-center justify-between bg-slate-900/60 border border-slate-800/80 rounded-xl px-3 py-2 mb-3 backdrop-blur-sm">
     <button onclick="shiftDate(-1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition">
       <i data-lucide="chevron-left" class="w-5 h-5"></i>
@@ -77,57 +78,49 @@
     </button>
   </div>
 
-  <!-- FUTURE LOCK BANNER -->
-  <div id="futureLockBanner" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold">
-    <i data-lucide="lock" class="w-4 h-4 text-amber-400 shrink-0"></i>
-    <span>Future Date Locked: You cannot mark habits or edit entries ahead of time.</span>
-  </div>
+  <!-- STATUS BANNERS -->
+  <div id="statusBanner" class="hidden mb-4 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold border"></div>
 
-  <!-- VIEW CONTAINER: DAILY TAB -->
+  <!-- DAILY VIEW -->
   <div id="dailyView" class="space-y-5">
 
-    <!-- DAILY KPI SUMMARY -->
+    <!-- KPI STRIP -->
     <div class="grid grid-cols-3 gap-2.5">
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Boundaries</div>
-        <div id="boundaryScore" class="text-base font-bold text-emerald-400">All Clean</div>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Day Status</div>
+        <div id="kpiDayStatus" class="text-sm font-bold text-slate-400">Incomplete</div>
       </div>
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Water Total</div>
-        <div id="kpiWaterTotal" class="text-base font-bold text-cyan-400">0 ml</div>
+        <div id="kpiWaterTotal" class="text-sm font-bold text-cyan-400">0 ml</div>
       </div>
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Protein</div>
-        <div id="kpiProteinTotal" class="text-base font-bold text-amber-400">0g / 160g</div>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Calories / Protein</div>
+        <div id="kpiMacroSummary" class="text-xs font-bold text-amber-400">0 kcal • 0g P</div>
       </div>
     </div>
 
-    <!-- WRAPPER THAT RECEIVES .locked-overlay IF FUTURE -->
+    <!-- DAILY INTERACTION WRAPPER -->
     <div id="interactiveContent" class="space-y-5">
 
-      <!-- OBJECTIVE CARD: DRONE SPRINT (5x / WEEK) -->
-      <div class="relative overflow-hidden bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
+      <!-- DRONE SPRINT -->
+      <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
         <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-lg">
-              🚁
-            </div>
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-lg">🚁</div>
             <div>
               <div class="flex items-center gap-2">
                 <h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hour • 5x/wk</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hr • 5x/wk</span>
               </div>
               <p id="droneWeeklyStatus" class="text-xs text-slate-400 mt-0.5">This Week: 0 / 5 sessions logged</p>
             </div>
           </div>
-
           <button id="droneTodayBtn" onclick="toggleDroneSprint()" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300">
             <i data-lucide="clock" class="w-3.5 h-3.5"></i>
             <span>Log 1 Hr</span>
           </button>
         </div>
-
-        <!-- Weekly Progress Pips -->
         <div class="mt-3.5 flex items-center gap-1.5">
           <div id="dronePip1" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
           <div id="dronePip2" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
@@ -135,20 +128,12 @@
           <div id="dronePip4" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
           <div id="dronePip5" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
         </div>
-
-        <!-- Optional Build Notes -->
         <div class="mt-3 pt-3 border-t border-slate-800/80">
-          <input 
-            type="text" 
-            id="droneNotes" 
-            placeholder="Session notes (e.g. Flight controller wiring, ESC soldering, CAD chassis)..."
-            oninput="saveDroneNotes(this.value)"
-            class="w-full bg-slate-950/60 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500"
-          />
+          <input type="text" id="droneNotes" placeholder="Session build notes (CAD, motor test, solder, Betaflight)..." oninput="saveDroneNotes(this.value)" class="w-full bg-slate-950/60 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500" />
         </div>
       </div>
 
-      <!-- WATER BOTTLE TRACKER (1.0L & 710ML) -->
+      <!-- HYDRATION BOTTLES -->
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
@@ -157,18 +142,14 @@
             </div>
             <div>
               <h2 class="text-sm font-bold text-white">Hydration Bottles</h2>
-              <div class="text-[11px] text-slate-400">Target: 4+ Liters (4,000 ml) + Electrolytes</div>
+              <div class="text-[11px] text-slate-400">Target: 4,000+ ml + Electrolytes</div>
             </div>
           </div>
-          <div id="waterStatusTag" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-            0%
-          </div>
+          <div id="waterStatusTag" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">0%</div>
         </div>
-
         <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden mb-4">
           <div id="waterFillBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div>
         </div>
-
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
             <div class="flex items-center justify-between">
@@ -179,11 +160,10 @@
               <div id="count1000" class="text-lg font-extrabold text-cyan-400">0x</div>
             </div>
             <div class="flex items-center gap-2 mt-3">
-              <button onclick="decrementBottle('b1000')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">-</button>
-              <button onclick="incrementBottle('b1000')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">+ Finished 1L</button>
+              <button onclick="decrementBottle('b1000')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">-</button>
+              <button onclick="incrementBottle('b1000')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold">+ 1L Bottle</button>
             </div>
           </div>
-
           <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
             <div class="flex items-center justify-between">
               <div>
@@ -193,8 +173,8 @@
               <div id="count710" class="text-lg font-extrabold text-cyan-400">0x</div>
             </div>
             <div class="flex items-center gap-2 mt-3">
-              <button onclick="decrementBottle('b710')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">-</button>
-              <button onclick="incrementBottle('b710')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition">+ Finished 710ml</button>
+              <button onclick="decrementBottle('b710')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">-</button>
+              <button onclick="incrementBottle('b710')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold">+ 710ml Bottle</button>
             </div>
           </div>
         </div>
@@ -209,7 +189,7 @@
             </div>
             <div>
               <h2 class="text-sm font-bold text-white">Avoidance Boundaries</h2>
-              <div class="text-[11px] text-slate-400">Defaults to Clean • Tap "Fail" if breached</div>
+              <div class="text-[11px] text-slate-400">All must remain Clean for a Green day</div>
             </div>
           </div>
         </div>
@@ -225,45 +205,70 @@
             </div>
             <div>
               <h2 class="text-sm font-bold text-white">Daily Actions & Hypertrophy</h2>
-              <div class="text-[11px] text-slate-400">Complete daily targets</div>
+              <div class="text-[11px] text-slate-400">100% required to complete day</div>
             </div>
           </div>
         </div>
         <div id="actionsList" class="space-y-2"></div>
       </div>
 
-      <!-- SMART MEAL TRACKER & PROTEIN ESTIMATOR -->
+      <!-- COMPREHENSIVE NUTRITION & MACROS -->
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <i data-lucide="utensils" class="w-4 h-4"></i>
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
             </div>
             <div>
-              <h2 class="text-sm font-bold text-white">Daily Meal Tracker</h2>
-              <div class="text-[11px] text-slate-400">Smart protein parsing per meal</div>
+              <h2 class="text-sm font-bold text-white">Meal & Macro Tracker</h2>
+              <div class="text-[11px] text-slate-400">Dual estimator: Local Code vs. Cloud AI API</div>
             </div>
           </div>
         </div>
+
+        <!-- Live Macro Target Gauges -->
+        <div class="grid grid-cols-4 gap-2 bg-slate-950/60 border border-slate-800/80 p-3 rounded-xl mb-4 text-center">
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase">Calories</div>
+            <div id="macroCal" class="text-xs font-black text-white mt-0.5">0</div>
+            <div id="macroGoalCal" class="text-[9px] text-slate-500">/ 2600</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase">Protein</div>
+            <div id="macroProt" class="text-xs font-black text-amber-400 mt-0.5">0g</div>
+            <div id="macroGoalProt" class="text-[9px] text-slate-500">/ 160g</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-cyan-400 font-bold uppercase">Carbs</div>
+            <div id="macroCarb" class="text-xs font-black text-cyan-400 mt-0.5">0g</div>
+            <div id="macroGoalCarb" class="text-[9px] text-slate-500">/ 300g</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-rose-400 font-bold uppercase">Fats</div>
+            <div id="macroFat" class="text-xs font-black text-rose-400 mt-0.5">0g</div>
+            <div id="macroGoalFat" class="text-[9px] text-slate-500">/ 70g</div>
+          </div>
+        </div>
+
+        <!-- Meal Log Cards -->
         <div id="mealsContainer" class="space-y-3"></div>
       </div>
 
     </div>
-
   </div>
 
-  <!-- VIEW CONTAINER: MONTHLY TAB -->
+  <!-- MONTHLY CALENDAR VIEW -->
   <div id="monthlyView" class="hidden space-y-5">
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-base font-bold text-white" id="monthCalendarTitle">Month</h2>
-          <div class="text-xs text-slate-400">Past & current day status</div>
+          <div class="text-xs text-slate-400">Strict Green = 100% boundary & action completion</div>
         </div>
-        <div class="flex items-center gap-1.5 text-xs">
-          <span class="flex items-center gap-1 text-emerald-400 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Clean</span>
-          <span class="flex items-center gap-1 text-rose-400 font-semibold ml-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Breach</span>
-          <span class="flex items-center gap-1 text-slate-500 font-semibold ml-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-800"></span>Locked</span>
+        <div class="flex items-center gap-2 text-[10px] font-bold">
+          <span class="flex items-center gap-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Complete</span>
+          <span class="flex items-center gap-1 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Pending</span>
+          <span class="flex items-center gap-1 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Breached</span>
         </div>
       </div>
 
@@ -273,24 +278,80 @@
       <div id="monthGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
     </div>
 
-    <!-- Monthly KPIs -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Drone Hours</div>
-        <div id="monthlyDroneCount" class="text-2xl font-black text-indigo-400">0 hrs</div>
-        <div class="text-[11px] text-slate-500 mt-1">Goal: 20 hrs / month</div>
+    <!-- Monthly Metric Tiles -->
+    <div class="grid grid-cols-3 gap-2.5">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fully Green Days</div>
+        <div id="monthlyFullGreen" class="text-lg font-black text-emerald-400">0</div>
       </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Clean Adherence</div>
-        <div id="monthlyAdherence" class="text-2xl font-black text-emerald-400">100%</div>
-        <div class="text-[11px] text-slate-500 mt-1" id="monthlyBreachCount">0 Breaches logged</div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Drone Hours</div>
+        <div id="monthlyDroneCount" class="text-lg font-black text-indigo-400">0 hrs</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Clean Adherence</div>
+        <div id="monthlyAdherence" class="text-lg font-black text-cyan-400">100%</div>
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- MACRO & AI SETTINGS MODAL -->
+<div id="settingsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
+        Daily Macro Goals & API Key
+      </h3>
+      <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white">✕</button>
+    </div>
+
+    <div class="space-y-2.5 text-xs">
+      <div>
+        <label class="block text-slate-400 mb-1">Target Calories (kcal)</label>
+        <input type="number" id="settingGoalCal" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label class="block text-amber-400 mb-1">Protein (g)</label>
+          <input type="number" id="settingGoalProt" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
+        </div>
+        <div>
+          <label class="block text-cyan-400 mb-1">Carbs (g)</label>
+          <input type="number" id="settingGoalCarb" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
+        </div>
+        <div>
+          <label class="block text-rose-400 mb-1">Fat (g)</label>
+          <input type="number" id="settingGoalFat" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-800">
+        <label class="block text-purple-400 font-bold mb-1 flex items-center gap-1.5">
+          <i data-lucide="key" class="w-3.5 h-3.5"></i> Gemini API Key
+        </label>
+        <input type="password" id="settingApiKey" placeholder="Paste your Gemini API Key here" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white text-[11px]" />
+        <p class="text-[10px] text-slate-500 mt-1">Required only when clicking the "✨ AI Cloud API" button.</p>
+      </div>
+    </div>
+
+    <button onclick="saveSettings()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
+      Save Preferences
+    </button>
+  </div>
+</div>
+
 <script>
+  // START DATE CONFIGURATION: OFFICIALLY STARTS TOMORROW
+  const todayObj = new Date();
+  const tomorrowObj = new Date(todayObj);
+  tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+
+  const START_DATE_KEY = localStorage.getItem('protocol_start_date') || getDayKey(tomorrowObj);
+  localStorage.setItem('protocol_start_date', START_DATE_KEY);
+
   const BOUNDARIES = [
     { id: "b_sugar", label: "No Sugar", desc: "Zero added sugar or sweets" },
     { id: "b_porn", label: "No Porn", desc: "Absolute boundary" },
@@ -298,9 +359,9 @@
     { id: "b_alcohol", label: "No Alcohol", desc: "Zero alcohol consumption" },
     { id: "b_scrolling", label: "No Scrolling of Any Form", desc: "Zero feed browsing (IG, TikTok, X, Reels)" },
     { id: "b_youtube", label: "No YouTube", desc: "Zero distraction videos" },
-    { id: "b_fakeprod", label: "No Fake Productivity", desc: "Real high-value study/work only" },
+    { id: "b_fakeprod", label: "No Fake Productivity", desc: "Real high-value coursework/building only" },
     { id: "b_stupid_ai", label: "No Stupid AI Questions", desc: "Think deeply before prompt crutches" },
-    { id: "b_touch_face", label: "Keep Hands Off Face", desc: "Protect skin; avoid transferring oils" }
+    { id: "b_touch_face", label: "Keep Hands Off Face", desc: "Skin protection; avoid pore contamination" }
   ];
 
   const ACTIONS = [
@@ -310,8 +371,8 @@
     { id: "a_study", label: "Study At Least 1 Hour", desc: "Focused deep coursework session" },
     { id: "a_drone", label: "Drone Project (1 Hr Sprint)", desc: "Mandatory 5x per week", isDroneLinked: true },
     { id: "a_water", label: "4+ Liters Water + Electrolytes", desc: "Tracked automatically via bottles", isWaterLinked: true },
-    { id: "a_protein", label: "Hit Protein Target (0.8–1g/lb)", desc: "Logged via meal breakdown", isProteinLinked: true },
-    { id: "a_shower", label: "Shower Post-Workout", desc: "Wash away sweat to prevent body acne" }
+    { id: "a_protein", label: "Hit Protein Target (160g+)", desc: "Calculated from meal logs", isProteinLinked: true },
+    { id: "a_shower", label: "Shower Post-Workout", desc: "Wash away sweat to prevent breakouts" }
   ];
 
   const MEALS = [
@@ -324,9 +385,20 @@
   let currentDate = new Date();
   let currentTab = 'daily';
   let appData = JSON.parse(localStorage.getItem('protocol_master_data') || '{}');
+  let userGoals = JSON.parse(localStorage.getItem('protocol_macro_goals') || JSON.stringify({
+    calories: 2600,
+    protein: 160,
+    carbs: 300,
+    fat: 70,
+    apiKey: ""
+  }));
 
   function getDayKey(date) {
     return date.toISOString().slice(0, 10);
+  }
+
+  function isDateBeforeStart(date) {
+    return getDayKey(date) < START_DATE_KEY;
   }
 
   function isDateInFuture(date) {
@@ -345,10 +417,10 @@
         water: { b1000: 0, b710: 0 },
         drone: { done: false, notes: '' },
         meals: {
-          m_breakfast: { text: '', protein: 0 },
-          m_lunch: { text: '', protein: 0 },
-          m_dinner: { text: '', protein: 0 },
-          m_snacks: { text: '', protein: 0 }
+          m_breakfast: { text: '', cal: 0, p: 0, c: 0, f: 0 },
+          m_lunch: { text: '', cal: 0, p: 0, c: 0, f: 0 },
+          m_dinner: { text: '', cal: 0, p: 0, c: 0, f: 0 },
+          m_snacks: { text: '', cal: 0, p: 0, c: 0, f: 0 }
         }
       };
     }
@@ -382,19 +454,18 @@
     render();
   }
 
+  // WATER
   function incrementBottle(type) {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
     rec.water[type] = (rec.water[type] || 0) + 1;
     syncAutomations(rec);
     persist();
   }
 
   function decrementBottle(type) {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
     if ((rec.water[type] || 0) > 0) {
       rec.water[type]--;
       syncAutomations(rec);
@@ -406,6 +477,7 @@
     return ((water.b1000 || 0) * 1000) + ((water.b710 || 0) * 710);
   }
 
+  // DRONE 5X / WEEK
   function getWeekDateKeys(d) {
     const current = new Date(d);
     const day = current.getDay();
@@ -422,251 +494,428 @@
 
   function getWeeklyDroneCount(date) {
     const weekKeys = getWeekDateKeys(date);
-    return weekKeys.reduce((acc, k) => {
-      return acc + (appData[k]?.drone?.done ? 1 : 0);
-    }, 0);
+    return weekKeys.reduce((acc, k) => acc + (appData[k]?.drone?.done ? 1 : 0), 0);
   }
 
   function toggleDroneSprint() {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
     rec.drone.done = !rec.drone.done;
     syncAutomations(rec);
     persist();
   }
 
   function saveDroneNotes(val) {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
     rec.drone.notes = val;
     localStorage.setItem('protocol_master_data', JSON.stringify(appData));
   }
 
-  function estimateProteinFromText(str) {
-    if (!str) return 0;
-    const lower = str.toLowerCase();
-    let total = 0;
+  // METHOD 1: INTERNAL LOCAL PARSER (OFFLINE REGEX / HEURISTICS)
+  function parseLocalMacros(queryText) {
+    const text = queryText.toLowerCase().trim();
+    if (!text) return { cal: 0, p: 0, c: 0, f: 0 };
 
-    const gramMatch = lower.match(/(\d+)\s*g\b/);
-    if (gramMatch) return parseInt(gramMatch[1], 10);
+    let cal = 0, p = 0, c = 0, f = 0;
 
-    const ozMatch = lower.match(/(\d+(\.\d+)?)\s*oz\s*(chicken|beef|steak|turkey|salmon|tuna|meat|fish)/);
-    if (ozMatch) total += Math.round(parseFloat(ozMatch[1]) * 7);
+    const ozMatch = text.match(/(\d+(\.\d+)?)\s*oz\s*(chicken|breast|steak|beef|salmon|turkey|tuna|fish)/);
+    if (ozMatch) {
+      const oz = parseFloat(ozMatch[1]);
+      const isChicken = text.includes('chicken') || text.includes('turkey');
+      p += Math.round(oz * 7.5);
+      f += Math.round(oz * (isChicken ? 1.5 : 4));
+      cal += Math.round(oz * (isChicken ? 45 : 65));
+    }
 
-    const eggMatch = lower.match(/(\d+)\s*(whole\s*)?eggs?/);
-    if (eggMatch) total += parseInt(eggMatch[1], 10) * 6;
+    const eggMatch = text.match(/(\d+)\s*(whole\s*)?eggs?/);
+    if (eggMatch) {
+      const count = parseInt(eggMatch[1], 10);
+      cal += count * 72; p += count * 6; f += count * 5; c += count * 0.5;
+    }
 
-    const scoopMatch = lower.match(/(\d+)\s*scoops?/);
-    if (scoopMatch) total += parseInt(scoopMatch[1], 10) * 25;
+    const scoopMatch = text.match(/(\d+)\s*scoops?/);
+    if (scoopMatch) {
+      const count = parseInt(scoopMatch[1], 10);
+      cal += count * 125; p += count * 25; c += count * 3; f += count * 1.5;
+    }
 
-    if (lower.includes("greek yogurt")) total += 18;
-    if (lower.includes("fairlife")) total += 30;
-    if (lower.includes("protein bar")) total += 20;
-    if (lower.includes("can of tuna") || lower.includes("tuna can")) total += 32;
-    if (lower.includes("chipotle") && lower.includes("double")) total += 55;
-    else if (lower.includes("chipotle")) total += 35;
+    const toastMatch = text.match(/(\d+)\s*slices?\s*(bread|toast|sourdough)?/);
+    if (toastMatch) {
+      const count = parseInt(toastMatch[1], 10);
+      cal += count * 80; c += count * 15; p += count * 3; f += count * 1;
+    }
 
-    return total;
+    if (text.includes("greek yogurt")) { cal += 130; p += 18; c += 7; f += 0; }
+    if (text.includes("fairlife")) { cal += 150; p += 30; c += 6; f += 2.5; }
+    if (text.includes("avocado")) { cal += 160; f += 15; c += 8; p += 2; }
+    if (text.includes("can of tuna") || text.includes("tuna can")) { cal += 140; p += 32; f += 1; c += 0; }
+    if (text.includes("peanut butter")) { cal += 190; f += 16; p += 8; c += 7; }
+    if (text.includes("rice")) { cal += 205; c += 45; p += 4; f += 0.5; }
+    if (text.includes("chipotle")) {
+      const dbl = text.includes("double");
+      cal += dbl ? 950 : 750;
+      p += dbl ? 55 : 38;
+      c += 80;
+      f += dbl ? 32 : 24;
+    }
+
+    if (cal === 0 && p === 0) {
+      cal = 400; p = 25; c = 45; f = 14;
+    }
+
+    return { cal, p, c, f };
   }
 
-  function updateMeal(mealId, field, value) {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
-    rec.meals[mealId][field] = value;
-
-    if (field === 'text' && (!rec.meals[mealId].protein || rec.meals[mealId].protein === 0)) {
-      const autoEst = estimateProteinFromText(value);
-      if (autoEst > 0) rec.meals[mealId].protein = autoEst;
+  // METHOD 2: CLOUD AI API (GEMINI CALL)
+  async function parseCloudAiMacros(queryText) {
+    if (!userGoals.apiKey || userGoals.apiKey.trim().length === 0) {
+      alert("Please open Settings (gear icon) and paste your Gemini API Key first.");
+      toggleSettingsModal();
+      return null;
     }
+
+    const prompt = `Estimate total nutrition for this meal: "${queryText}". Output strictly valid JSON without formatting, markdown, or code fences: {"cal": number, "p": number, "c": number, "f": number}`;
+    
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(userGoals.apiKey.trim())}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const rawText = data.candidates[0].content.parts[0].text;
+    const cleanJson = rawText.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleanJson);
+
+    return {
+      cal: Math.round(Number(parsed.cal) || 0),
+      p: Math.round(Number(parsed.p) || 0),
+      c: Math.round(Number(parsed.c) || 0),
+      f: Math.round(Number(parsed.f) || 0)
+    };
+  }
+
+  // HANDLER: TRIGGER LOCAL
+  function triggerLocalEst(mealId) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    const meal = rec.meals[mealId];
+    if (!meal.text) return;
+
+    const est = parseLocalMacros(meal.text);
+    meal.cal = est.cal;
+    meal.p = est.p;
+    meal.c = est.c;
+    meal.f = est.f;
 
     syncAutomations(rec);
     persist();
+  }
+
+  // HANDLER: TRIGGER CLOUD API
+  async function triggerCloudAiEst(mealId) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    const meal = rec.meals[mealId];
+    if (!meal.text) return;
+
+    const btn = document.getElementById(`btnCloud_${mealId}`);
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) {
+      btn.innerHTML = `<span class="animate-pulse">Thinking...</span>`;
+      btn.disabled = true;
+    }
+
+    try {
+      const est = await parseCloudAiMacros(meal.text);
+      if (est) {
+        meal.cal = est.cal;
+        meal.p = est.p;
+        meal.c = est.c;
+        meal.f = est.f;
+        syncAutomations(rec);
+        persist();
+      }
+    } catch (err) {
+      alert(`API Error: ${err.message}`);
+    } finally {
+      if (btn) {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        lucide.createIcons();
+      }
+    }
+  }
+
+  function updateMealField(mealId, field, val) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.meals[mealId][field] = field === 'text' ? val : (parseInt(val, 10) || 0);
+    syncAutomations(rec);
+    persist();
+  }
+
+  // STRICT FULL COMPLETION VALIDATOR
+  function evaluateDayStatus(rec, date) {
+    if (isDateBeforeStart(date)) return "unactivated";
+    if (isDateInFuture(date)) return "locked";
+
+    const hasBreach = Object.values(rec.boundaries || {}).some(v => v === true);
+    if (hasBreach) return "breached";
+
+    const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
+    let allActionsDone = true;
+
+    ACTIONS.forEach(a => {
+      if (a.weekdayOnly && isWeekend) return;
+      if (!rec.actions[a.id]) {
+        allActionsDone = false;
+      }
+    });
+
+    return allActionsDone ? "complete" : "pending";
   }
 
   function syncAutomations(rec) {
     const vol = getWaterVolume(rec.water);
     rec.actions['a_water'] = vol >= 4000;
     rec.actions['a_drone'] = !!rec.drone.done;
-    const totalP = Object.values(rec.meals).reduce((s, m) => s + (Number(m.protein) || 0), 0);
-    rec.actions['a_protein'] = totalP >= 160;
+
+    const totalP = Object.values(rec.meals).reduce((s, m) => s + (Number(m.p) || 0), 0);
+    rec.actions['a_protein'] = totalP >= (userGoals.protein || 160);
   }
 
+  function setBoundary(bId, val) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.boundaries[bId] = val;
+    persist();
+  }
+
+  // RENDER PIPELINE
   function render() {
-    const isFuture = isDateInFuture(currentDate);
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
     syncAutomations(rec);
 
+    const isFuture = isDateInFuture(currentDate);
+    const isPrior = isDateBeforeStart(currentDate);
     const isWeekend = (currentDate.getDay() === 0 || currentDate.getDay() === 6);
+    const dayStatus = evaluateDayStatus(rec, currentDate);
 
-    document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString(undefined, {
-      weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
-    });
+    document.getElementById('protocolStartNotice').innerText = `Protocol Start: ${new Date(START_DATE_KEY + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
     document.getElementById('currentDateLabel').innerText = currentDate.toLocaleDateString(undefined, {
       month: 'short', day: 'numeric', year: 'numeric'
     });
     document.getElementById('dayBadge').innerText = isWeekend ? 'Weekend' : 'Weekday';
 
-    // Lock banner & overlay
-    document.getElementById('futureLockBanner').classList.toggle('hidden', !isFuture);
-    const contentWrap = document.getElementById('interactiveContent');
-    contentWrap.className = isFuture ? 'space-y-5 locked-overlay' : 'space-y-5';
+    const banner = document.getElementById('statusBanner');
+    if (isPrior) {
+      banner.className = 'mb-4 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold';
+      banner.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-slate-400"></i><span>Pre-Protocol Date: Official daily tracking starts tomorrow.</span>`;
+      banner.classList.remove('hidden');
+    } else if (isFuture) {
+      banner.className = 'mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold';
+      banner.innerHTML = `<i data-lucide="lock" class="w-4 h-4 text-amber-400"></i><span>Future Date Locked: Directives unlock on this calendar day.</span>`;
+      banner.classList.remove('hidden');
+    } else {
+      banner.classList.add('hidden');
+    }
 
-    // Boundaries
+    const contentWrap = document.getElementById('interactiveContent');
+    contentWrap.className = (isFuture || isPrior) ? 'space-y-5 locked-overlay' : 'space-y-5';
+
+    const statusMap = {
+      unactivated: { text: "Unactivated", color: "text-slate-500" },
+      locked: { text: "Locked", color: "text-slate-500" },
+      breached: { text: "Breached", color: "text-rose-400" },
+      pending: { text: "Incomplete", color: "text-amber-400" },
+      complete: { text: "100% Complete ✓", color: "text-emerald-400" }
+    };
+    document.getElementById('kpiDayStatus').innerText = statusMap[dayStatus].text;
+    document.getElementById('kpiDayStatus').className = `text-sm font-bold ${statusMap[dayStatus].color}`;
+
+    // RENDER BOUNDARIES
     const boundsContainer = document.getElementById('boundariesList');
     boundsContainer.innerHTML = '';
-    let breachCount = 0;
-
     BOUNDARIES.forEach(b => {
-      const isFailed = !isFuture && !!rec.boundaries[b.id];
-      if (isFailed) breachCount++;
-
+      const isFailed = !isPrior && !isFuture && !!rec.boundaries[b.id];
       const div = document.createElement('div');
       div.className = `flex items-center justify-between p-3 rounded-xl border transition-all ${
         isFailed ? 'bg-rose-950/20 border-rose-600/40' : 'bg-slate-950/40 border-slate-800'
       }`;
-
       div.innerHTML = `
         <div class="pr-2">
           <div class="text-xs font-bold ${isFailed ? 'text-rose-300' : 'text-slate-200'}">${b.label}</div>
           <div class="text-[10px] text-slate-400">${b.desc}</div>
         </div>
         <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 p-1 rounded-lg">
-          <button onclick="setBoundary('${b.id}', false)" ${isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
-            !isFailed && !isFuture ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'
+          <button onclick="setBoundary('${b.id}', false)" ${isPrior || isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
+            !isFailed && !isPrior && !isFuture ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'
           }">Clean</button>
-          <button onclick="setBoundary('${b.id}', true)" ${isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
-            isFailed ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-500 hover:text-rose-400'
+          <button onclick="setBoundary('${b.id}', true)" ${isPrior || isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
+            isFailed ? 'bg-rose-600 text-white' : 'text-slate-500 hover:text-rose-400'
           }">Fail</button>
         </div>
       `;
       boundsContainer.appendChild(div);
     });
 
-    if (isFuture) {
-      document.getElementById('boundaryScore').innerText = 'Locked';
-      document.getElementById('boundaryScore').className = 'text-base font-bold text-slate-500';
-    } else {
-      document.getElementById('boundaryScore').innerText = breachCount === 0 ? 'All Clean ✓' : `${breachCount} Breached`;
-      document.getElementById('boundaryScore').className = breachCount === 0 ? 'text-base font-bold text-emerald-400' : 'text-base font-bold text-rose-400';
-    }
-
-    // Actions
+    // RENDER ACTIONS
     const actionsContainer = document.getElementById('actionsList');
     actionsContainer.innerHTML = '';
-
     ACTIONS.forEach(a => {
-      const isChecked = !isFuture && !!rec.actions[a.id];
+      const isChecked = !isPrior && !isFuture && !!rec.actions[a.id];
       const div = document.createElement('label');
       div.className = `flex items-center justify-between p-3 rounded-xl border transition ${
-        isFuture ? 'bg-slate-950/40 border-slate-800' : (isChecked ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/40 border-slate-800')
+        isChecked ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/40 border-slate-800'
       }`;
 
-      let extraBadge = '';
-      if (a.weekdayOnly && isWeekend) {
-        extraBadge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 ml-2">Weekend Off</span>';
-      }
+      let extraBadge = (a.weekdayOnly && isWeekend) ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 ml-2">Weekend Off</span>' : '';
 
       div.innerHTML = `
         <div class="flex items-center gap-3">
-          <input type="checkbox" ${isChecked ? 'checked' : ''} ${isFuture || a.isWaterLinked || a.isDroneLinked || a.isProteinLinked ? 'disabled' : ''} class="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 accent-emerald-500" />
+          <input type="checkbox" ${isChecked ? 'checked' : ''} ${isPrior || isFuture || a.isWaterLinked || a.isDroneLinked || a.isProteinLinked ? 'disabled' : ''} class="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 accent-emerald-500" />
           <div>
             <div class="text-xs font-bold text-slate-200 flex items-center">${a.label} ${extraBadge}</div>
             <div class="text-[10px] text-slate-400">${a.desc}</div>
           </div>
         </div>
         <div class="text-[11px] font-bold ${isChecked ? 'text-emerald-400' : 'text-slate-500'}">
-          ${isFuture ? 'Locked' : (isChecked ? 'Done' : 'Pending')}
+          ${(isPrior || isFuture) ? 'Locked' : (isChecked ? 'Done' : 'Required')}
         </div>
       `;
 
-      if (!isFuture && !a.isWaterLinked && !a.isDroneLinked && !a.isProteinLinked) {
+      if (!isPrior && !isFuture && !a.isWaterLinked && !a.isDroneLinked && !a.isProteinLinked) {
         div.querySelector('input').addEventListener('change', (e) => {
           rec.actions[a.id] = e.target.checked;
           persist();
         });
       }
-
       actionsContainer.appendChild(div);
     });
 
-    // Water
-    const waterVol = isFuture ? 0 : getWaterVolume(rec.water);
+    // RENDER WATER
+    const waterVol = (isPrior || isFuture) ? 0 : getWaterVolume(rec.water);
     document.getElementById('kpiWaterTotal').innerText = `${waterVol.toLocaleString()} ml`;
-    document.getElementById('count1000').innerText = `${isFuture ? 0 : (rec.water.b1000 || 0)}x`;
-    document.getElementById('count710').innerText = `${isFuture ? 0 : (rec.water.b710 || 0)}x`;
+    document.getElementById('count1000').innerText = `${(isPrior || isFuture) ? 0 : (rec.water.b1000 || 0)}x`;
+    document.getElementById('count710').innerText = `${(isPrior || isFuture) ? 0 : (rec.water.b710 || 0)}x`;
     const waterPct = Math.min(100, Math.round((waterVol / 4000) * 100));
     document.getElementById('waterFillBar').style.width = `${waterPct}%`;
     document.getElementById('waterStatusTag').innerText = `${waterPct}% (${waterVol}/4000 ml)`;
 
-    // Drone
+    // RENDER DRONE SPRINT
     const weekCount = getWeeklyDroneCount(currentDate);
-    const droneToday = !isFuture && !!rec.drone.done;
+    const droneToday = !isPrior && !isFuture && !!rec.drone.done;
     document.getElementById('droneWeeklyStatus').innerText = `This Week: ${weekCount} / 5 sessions logged`;
     document.getElementById('droneTodayBtn').className = droneToday
       ? 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-400'
       : 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300';
     document.getElementById('droneTodayBtn').innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i><span>${droneToday ? '1 Hr Done ✓' : 'Log 1 Hr'}</span>`;
-    document.getElementById('droneNotes').value = isFuture ? '' : (rec.drone.notes || '');
-
+    document.getElementById('droneNotes').value = (isPrior || isFuture) ? '' : (rec.drone.notes || '');
     for (let p = 1; p <= 5; p++) {
-      const pip = document.getElementById(`dronePip${p}`);
-      pip.className = p <= weekCount ? 'h-1.5 flex-1 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50' : 'h-1.5 flex-1 rounded-full bg-slate-800';
+      document.getElementById(`dronePip${p}`).className = p <= weekCount ? 'h-1.5 flex-1 rounded-full bg-indigo-500' : 'h-1.5 flex-1 rounded-full bg-slate-800';
     }
 
-    // Meals
+    // RENDER MEALS & TOTAL MACROS WITH DUAL BUTTONS
     const mealsContainer = document.getElementById('mealsContainer');
     mealsContainer.innerHTML = '';
-    let totalP = 0;
+    let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
 
     MEALS.forEach(m => {
-      const mData = isFuture ? { text: '', protein: 0 } : (rec.meals[m.id] || { text: '', protein: 0 });
-      totalP += Number(mData.protein) || 0;
+      const mData = (isPrior || isFuture) ? { text: '', cal: 0, p: 0, c: 0, f: 0 } : (rec.meals[m.id] || { text: '', cal: 0, p: 0, c: 0, f: 0 });
+      totalCal += Number(mData.cal) || 0;
+      totalP += Number(mData.p) || 0;
+      totalC += Number(mData.c) || 0;
+      totalF += Number(mData.f) || 0;
 
       const card = document.createElement('div');
       card.className = 'bg-slate-950/50 border border-slate-800 rounded-xl p-3 space-y-2';
       card.innerHTML = `
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-slate-200">${m.label}</span>
-          <div class="flex items-center gap-1.5">
-            <span class="text-[10px] text-slate-400 font-semibold">Protein:</span>
-            <input 
-              type="number" 
-              value="${mData.protein || ''}" 
-              ${isFuture ? 'disabled' : ''}
-              placeholder="0"
-              onchange="updateMeal('${m.id}', 'protein', parseInt(this.value, 10) || 0)"
-              class="w-14 bg-slate-900 border border-slate-800 rounded px-1.5 py-0.5 text-xs text-amber-400 font-bold text-right"
-            />
-            <span class="text-[10px] text-amber-400 font-bold">g</span>
+          <div class="flex items-center gap-2 text-[10px]">
+            <span class="text-slate-400 font-semibold">${mData.cal || 0} kcal</span>
+            <span class="text-amber-400 font-bold">${mData.p || 0}g P</span>
+            <span class="text-cyan-400 font-bold">${mData.c || 0}g C</span>
+            <span class="text-rose-400 font-bold">${mData.f || 0}g F</span>
           </div>
         </div>
+
+        <input 
+          type="text" 
+          value="${mData.text || ''}" 
+          ${isPrior || isFuture ? 'disabled' : ''}
+          placeholder="Describe your food (e.g. 8oz chicken, 2 eggs, avocado)..."
+          onchange="updateMealField('${m.id}', 'text', this.value)"
+          class="w-full bg-slate-900/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600"
+        />
+
+        <!-- DUAL ESTIMATION BUTTONS -->
         <div class="flex items-center gap-2">
-          <input 
-            type="text" 
-            value="${mData.text || ''}" 
-            ${isFuture ? 'disabled' : ''}
-            placeholder="e.g. 8oz chicken breast, 4 eggs, rice..."
-            onchange="updateMeal('${m.id}', 'text', this.value)"
-            class="flex-1 bg-slate-900/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600"
-          />
           <button 
             type="button"
-            ${isFuture ? 'disabled' : ''}
-            onclick="quickParseMeal('${m.id}')"
-            class="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-amber-300 rounded-lg border border-slate-700 transition"
+            ${isPrior || isFuture ? 'disabled' : ''}
+            onclick="triggerLocalEst('${m.id}')"
+            title="Parse using built-in offline code"
+            class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-700 transition flex items-center justify-center gap-1"
           >
-            ⚡ Est
+            <span>⚡ Local Est</span>
           </button>
+          
+          <button 
+            type="button"
+            id="btnCloud_${m.id}"
+            ${isPrior || isFuture ? 'disabled' : ''}
+            onclick="triggerCloudAiEst('${m.id}')"
+            title="Call cloud Gemini AI via API Key"
+            class="flex-1 py-1.5 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 hover:from-purple-900/60 hover:to-indigo-900/60 text-[10px] font-bold text-indigo-300 rounded-lg border border-indigo-500/40 transition flex items-center justify-center gap-1 shadow-sm"
+          >
+            <i data-lucide="sparkles" class="w-3 h-3 text-indigo-400"></i>
+            <span>✨ AI Cloud API</span>
+          </button>
+        </div>
+
+        <!-- Manual Macro Adjustments -->
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <div>
+            <span class="block text-[8px] text-slate-500 font-bold uppercase text-center mb-0.5">Cal</span>
+            <input type="number" value="${mData.cal || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'cal', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-white text-center font-bold" />
+          </div>
+          <div>
+            <span class="block text-[8px] text-amber-500 font-bold uppercase text-center mb-0.5">Prot</span>
+            <input type="number" value="${mData.p || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'p', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-amber-400 text-center font-bold" />
+          </div>
+          <div>
+            <span class="block text-[8px] text-cyan-500 font-bold uppercase text-center mb-0.5">Carb</span>
+            <input type="number" value="${mData.c || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-cyan-400 text-center font-bold" />
+          </div>
+          <div>
+            <span class="block text-[8px] text-rose-500 font-bold uppercase text-center mb-0.5">Fat</span>
+            <input type="number" value="${mData.f || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'f', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-rose-400 text-center font-bold" />
+          </div>
         </div>
       `;
       mealsContainer.appendChild(card);
     });
 
-    document.getElementById('kpiProteinTotal').innerText = `${totalP}g / 160g`;
+    document.getElementById('macroCal').innerText = totalCal;
+    document.getElementById('macroProt').innerText = `${totalP}g`;
+    document.getElementById('macroCarb').innerText = `${totalC}g`;
+    document.getElementById('macroFat').innerText = `${totalF}g`;
+
+    document.getElementById('macroGoalCal').innerText = `/ ${userGoals.calories}`;
+    document.getElementById('macroGoalProt').innerText = `/ ${userGoals.protein}g`;
+    document.getElementById('macroGoalCarb').innerText = `/ ${userGoals.carbs}g`;
+    document.getElementById('macroGoalFat').innerText = `/ ${userGoals.fat}g`;
+
+    document.getElementById('kpiMacroSummary').innerText = `${totalCal} kcal • ${totalP}g P`;
 
     if (currentTab === 'monthly') {
       renderMonthlyCalendar();
@@ -675,27 +924,7 @@
     lucide.createIcons();
   }
 
-  function setBoundary(bId, val) {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
-    rec.boundaries[bId] = val;
-    persist();
-  }
-
-  function quickParseMeal(mealId) {
-    if (isDateInFuture(currentDate)) return;
-    const key = getDayKey(currentDate);
-    const rec = getDayRecord(key);
-    const text = rec.meals[mealId].text;
-    const est = estimateProteinFromText(text);
-    if (est > 0) {
-      rec.meals[mealId].protein = est;
-      syncAutomations(rec);
-      persist();
-    }
-  }
-
+  // MONTHLY CALENDAR
   function renderMonthlyCalendar() {
     const grid = document.getElementById('monthGrid');
     grid.innerHTML = '';
@@ -709,9 +938,10 @@
       month: 'long', year: 'numeric'
     });
 
+    let fullGreenCount = 0;
     let droneTotalHours = 0;
-    let breachedDays = 0;
     let evaluatedDays = 0;
+    let cleanAdherenceDays = 0;
 
     let dayOffset = firstDay.getDay() - 1;
     if (dayOffset === -1) dayOffset = 6;
@@ -723,9 +953,9 @@
 
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const thisDate = new Date(year, month, d);
-      const isFuture = isDateInFuture(thisDate);
       const k = getDayKey(thisDate);
-      const rec = appData[k];
+      const rec = appData[k] || { boundaries: {}, actions: {} };
+      const status = evaluateDayStatus(rec, thisDate);
 
       const cell = document.createElement('button');
       cell.onclick = () => {
@@ -733,25 +963,28 @@
         switchTab('daily');
       };
 
-      let bg = 'bg-slate-900/40 border-slate-800/80 text-slate-500';
+      let bg = 'bg-slate-950/40 border-slate-900 text-slate-600';
       let iconBadge = '';
 
-      if (isFuture) {
-        // Locked future tile: never green, never evaluated
-        bg = 'bg-slate-950/60 border-slate-900 text-slate-600 opacity-60 cursor-not-allowed';
-        iconBadge = '<span class="text-[7px] text-slate-600 absolute top-0.5 right-1">🔒</span>';
+      if (status === 'unactivated') {
+        bg = 'bg-slate-950/30 border-slate-900 text-slate-600';
+      } else if (status === 'locked') {
+        bg = 'bg-slate-950/60 border-slate-900 text-slate-700 cursor-not-allowed';
+        iconBadge = '<span class="text-[7px] absolute top-0.5 right-1">🔒</span>';
       } else {
         evaluatedDays++;
-        const hasBreach = rec && Object.values(rec.boundaries || {}).some(v => v === true);
-
-        if (hasBreach) {
+        if (status === 'breached') {
           bg = 'bg-rose-950/40 border-rose-600/50 text-rose-300 font-bold';
-          breachedDays++;
+        } else if (status === 'complete') {
+          bg = 'bg-emerald-950/50 border-emerald-500 text-emerald-300 font-extrabold shadow-sm shadow-emerald-500/20';
+          fullGreenCount++;
+          cleanAdherenceDays++;
         } else {
-          bg = 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300 font-bold';
+          bg = 'bg-amber-950/30 border-amber-500/40 text-amber-300 font-bold';
+          cleanAdherenceDays++;
         }
 
-        if (rec?.drone?.done) {
+        if (rec.drone?.done) {
           droneTotalHours++;
           iconBadge = '<span class="text-[8px] absolute top-0.5 right-0.5">🚁</span>';
         }
@@ -762,14 +995,45 @@
       grid.appendChild(cell);
     }
 
+    document.getElementById('monthlyFullGreen').innerText = fullGreenCount;
     document.getElementById('monthlyDroneCount').innerText = `${droneTotalHours} hrs`;
-    document.getElementById('monthlyBreachCount').innerText = `${breachedDays} Breaches logged`;
-    const adherence = evaluatedDays > 0 ? Math.round(((evaluatedDays - breachedDays) / evaluatedDays) * 100) : 100;
+    const adherence = evaluatedDays > 0 ? Math.round((cleanAdherenceDays / evaluatedDays) * 100) : 100;
     document.getElementById('monthlyAdherence').innerText = `${adherence}%`;
   }
 
+  // SETTINGS MODAL
+  function toggleSettingsModal() {
+    const modal = document.getElementById('settingsModal');
+    modal.classList.toggle('hidden');
+    if (!modal.classList.contains('hidden')) {
+      document.getElementById('settingGoalCal').value = userGoals.calories;
+      document.getElementById('settingGoalProt').value = userGoals.protein;
+      document.getElementById('settingGoalCarb').value = userGoals.carbs;
+      document.getElementById('settingGoalFat').value = userGoals.fat;
+      document.getElementById('settingApiKey').value = userGoals.apiKey || '';
+    }
+  }
+
+  function saveSettings() {
+    userGoals.calories = parseInt(document.getElementById('settingGoalCal').value, 10) || 2600;
+    userGoals.protein = parseInt(document.getElementById('settingGoalProt').value, 10) || 160;
+    userGoals.carbs = parseInt(document.getElementById('settingGoalCarb').value, 10) || 300;
+    userGoals.fat = parseInt(document.getElementById('settingGoalFat').value, 10) || 70;
+    userGoals.apiKey = document.getElementById('settingApiKey').value.trim();
+
+    localStorage.setItem('protocol_macro_goals', JSON.stringify(userGoals));
+    toggleSettingsModal();
+    render();
+  }
+
+  // BACKUP & RESTORE
   function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+    const payload = {
+      startDate: START_DATE_KEY,
+      goals: userGoals,
+      data: appData
+    };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
     const a = document.createElement('a');
     a.setAttribute("href", dataStr);
     a.setAttribute("download", `protocol_backup_${getDayKey(new Date())}.json`);
@@ -785,11 +1049,16 @@
     reader.onload = function(evt) {
       try {
         const imported = JSON.parse(evt.target.result);
-        appData = imported;
+        if (imported.data) {
+          appData = imported.data;
+          if (imported.goals) userGoals = imported.goals;
+        } else {
+          appData = imported;
+        }
         persist();
-        alert('Protocol data imported successfully!');
+        alert('Data imported successfully!');
       } catch (err) {
-        alert('Invalid JSON file.');
+        alert('Invalid backup JSON file.');
       }
     };
     reader.readAsText(file);
