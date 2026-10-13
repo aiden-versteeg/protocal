@@ -21,15 +21,9 @@
       -webkit-tap-highlight-color: transparent;
     }
     input, textarea, select, button { outline: none; }
-    .locked-overlay {
-      pointer-events: none;
-      opacity: 0.40;
-      filter: grayscale(0.7);
-    }
+    .locked-overlay { pointer-events: none; opacity: 0.40; filter: grayscale(0.7); }
     .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
     .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-    
-    /* Native Accordion Styling */
     details > summary { list-style: none; }
     details > summary::-webkit-details-marker { display: none; }
   </style>
@@ -65,45 +59,35 @@
   <!-- 4-TAB NAVIGATION BAR -->
   <nav class="grid grid-cols-4 gap-1 bg-slate-900/90 border border-slate-800 p-1 rounded-2xl mb-4 shadow-xl">
     <button id="navBtn_today" onclick="switchMainTab('today')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-      <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-      <span>Today</span>
+      <i data-lucide="calendar" class="w-3.5 h-3.5"></i><span>Today</span>
     </button>
     <button id="navBtn_matrix" onclick="switchMainTab('matrix')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
-      <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-      <span>Matrix</span>
+      <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i><span>Matrix</span>
     </button>
     <button id="navBtn_athletics" onclick="switchMainTab('athletics')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
-      <i data-lucide="dumbbell" class="w-3.5 h-3.5"></i>
-      <span>Athletics</span>
+      <i data-lucide="dumbbell" class="w-3.5 h-3.5"></i><span>Athletics</span>
     </button>
     <button id="navBtn_academics" onclick="switchMainTab('academics')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
-      <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
-      <span>Academics</span>
+      <i data-lucide="cpu" class="w-3.5 h-3.5"></i><span>Academics</span>
     </button>
   </nav>
 
   <!-- ========================================== -->
-  <!-- TAB 1: TODAY (ACTIONS, MEALS, BOUNDARIES) -->
+  <!-- TAB 1: TODAY -->
   <!-- ========================================== -->
   <section id="view_today" class="space-y-4">
-
     <!-- DATE CONTROLS -->
     <div class="flex items-center justify-between bg-slate-900/60 border border-slate-800/80 rounded-xl px-3 py-2 backdrop-blur-sm shadow-sm">
-      <button onclick="shiftDate(-1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
-        <i data-lucide="chevron-left" class="w-5 h-5"></i>
-      </button>
+      <button onclick="shiftDate(-1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
       <div class="text-center flex flex-col items-center">
         <span id="currentDateLabel" class="text-sm font-bold text-slate-200"></span>
         <span id="dayBadge" class="text-[9px] px-2 py-0.5 mt-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700"></span>
       </div>
-      <button onclick="shiftDate(1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
-        <i data-lucide="chevron-right" class="w-5 h-5"></i>
-      </button>
+      <button onclick="shiftDate(1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
     </div>
 
     <div id="statusBanner" class="hidden rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold border"></div>
 
-    <!-- DAILY KPI ROW -->
     <div class="grid grid-cols-3 gap-2.5">
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl text-center">
         <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</div>
@@ -120,17 +104,11 @@
     </div>
 
     <div id="interactiveTodayWrap" class="space-y-3">
-
-      <!-- MORNING WEIGH-IN STRIP (Pinned) -->
+      <!-- Weigh-In -->
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center justify-between shadow-lg">
         <div class="flex items-center gap-2.5">
-          <div class="w-7 h-7 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
-            <i data-lucide="scale" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <div class="text-xs font-bold text-slate-200">Morning Weigh-In</div>
-            <div class="text-[9px] text-slate-400">Fasted target</div>
-          </div>
+          <div class="w-7 h-7 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400"><i data-lucide="scale" class="w-3.5 h-3.5"></i></div>
+          <div><div class="text-xs font-bold text-slate-200">Morning Weigh-In</div><div class="text-[9px] text-slate-400">Fasted target</div></div>
         </div>
         <div class="flex items-center gap-1.5">
           <input type="number" step="0.1" id="todayWeightInput" placeholder="lbs" onchange="saveTodayWeight(this.value)" class="w-16 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-xs font-extrabold text-violet-300 text-center" />
@@ -138,186 +116,110 @@
         </div>
       </div>
 
-      <!-- PRIMARY ACTIONS (Collapsible) -->
+      <!-- Actions -->
       <details open class="group bg-slate-900/80 border border-slate-800 rounded-2xl shadow-lg">
         <summary class="flex items-center justify-between p-3.5 cursor-pointer">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-            </div>
-            <div>
-              <h2 class="text-xs font-bold text-white">Daily Actions & Regimen</h2>
-              <div class="text-[9px] text-slate-400 font-medium">100% required for Full Green</div>
-            </div>
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i></div>
+            <div><h2 class="text-xs font-bold text-white">Daily Actions & Regimen</h2><div class="text-[9px] text-slate-400 font-medium">100% required for Full Green</div></div>
           </div>
           <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform duration-300"></i>
         </summary>
         <div class="px-3.5 pb-3.5 space-y-1.5 border-t border-slate-800/50 pt-3" id="actionsList"></div>
       </details>
 
-      <!-- HYDRATION BOTTLES (Collapsible) -->
+      <!-- Hydration -->
       <details open class="group bg-slate-900/80 border border-slate-800 rounded-2xl shadow-lg">
         <summary class="flex items-center justify-between p-3.5 cursor-pointer">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-              <i data-lucide="droplet" class="w-3.5 h-3.5"></i>
-            </div>
-            <div>
-              <h2 class="text-xs font-bold text-white">Hydration Tracker</h2>
-              <div class="text-[9px] text-slate-400 font-medium">Target: 4,000+ ml</div>
-            </div>
+            <div class="w-7 h-7 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400"><i data-lucide="droplet" class="w-3.5 h-3.5"></i></div>
+            <div><h2 class="text-xs font-bold text-white">Hydration Tracker</h2><div class="text-[9px] text-slate-400 font-medium">Target: 4,000+ ml</div></div>
           </div>
           <div class="flex items-center gap-2">
             <div id="waterStatusTag" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">0%</div>
             <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform duration-300"></i>
           </div>
         </summary>
-        
         <div class="px-3.5 pb-3.5 border-t border-slate-800/50 pt-3">
-          <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-3">
-            <div id="waterFillBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div>
-          </div>
+          <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-3"><div id="waterFillBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div></div>
           <div class="grid grid-cols-2 gap-2.5">
             <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between">
-              <div>
-                <div class="text-[10px] font-bold text-slate-200">1.0L Bottle</div>
-                <div id="count1000" class="text-sm font-black text-cyan-400">0x</div>
-              </div>
-              <div class="flex items-center gap-1">
-                <button onclick="decrementBottle('b1000')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-300 text-xs font-bold">-</button>
-                <button onclick="incrementBottle('b1000')" class="px-2 h-6 bg-cyan-600/30 border border-cyan-500/40 rounded-md text-cyan-300 text-[10px] font-bold">+1L</button>
-              </div>
+              <div><div class="text-[10px] font-bold text-slate-200">1.0L Bottle</div><div id="count1000" class="text-sm font-black text-cyan-400">0x</div></div>
+              <div class="flex items-center gap-1"><button onclick="decrementBottle('b1000')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-300 text-xs font-bold">-</button><button onclick="incrementBottle('b1000')" class="px-2 h-6 bg-cyan-600/30 border border-cyan-500/40 rounded-md text-cyan-300 text-[10px] font-bold">+1L</button></div>
             </div>
             <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between">
-              <div>
-                <div class="text-[10px] font-bold text-slate-200">710ml Bottle</div>
-                <div id="count710" class="text-sm font-black text-cyan-400">0x</div>
-              </div>
-              <div class="flex items-center gap-1">
-                <button onclick="decrementBottle('b710')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-300 text-xs font-bold">-</button>
-                <button onclick="incrementBottle('b710')" class="px-2 h-6 bg-cyan-600/30 border border-cyan-500/40 rounded-md text-cyan-300 text-[10px] font-bold">+710</button>
-              </div>
+              <div><div class="text-[10px] font-bold text-slate-200">710ml Bottle</div><div id="count710" class="text-sm font-black text-cyan-400">0x</div></div>
+              <div class="flex items-center gap-1"><button onclick="decrementBottle('b710')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded-md text-slate-300 text-xs font-bold">-</button><button onclick="incrementBottle('b710')" class="px-2 h-6 bg-cyan-600/30 border border-cyan-500/40 rounded-md text-cyan-300 text-[10px] font-bold">+710</button></div>
             </div>
           </div>
         </div>
       </details>
 
-      <!-- MEAL TRACKER (Collapsible) -->
+      <!-- Meals -->
       <details open class="group bg-slate-900/80 border border-slate-800 rounded-2xl shadow-lg">
         <summary class="flex items-center justify-between p-3.5 cursor-pointer">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
-            </div>
-            <div>
-              <h2 class="text-xs font-bold text-white">Meal & Nutrition Tracker</h2>
-              <div class="text-[9px] text-slate-400 font-medium">Dual AI/Local estimator</div>
-            </div>
+            <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400"><i data-lucide="utensils" class="w-3.5 h-3.5"></i></div>
+            <div><h2 class="text-xs font-bold text-white">Meal & Nutrition Tracker</h2><div class="text-[9px] text-slate-400 font-medium">Vision AI & Dining Hall Sync</div></div>
           </div>
           <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform duration-300"></i>
         </summary>
-        
         <div class="px-3.5 pb-3.5 border-t border-slate-800/50 pt-3">
           <div class="grid grid-cols-4 gap-1 bg-slate-950/60 border border-slate-800/80 p-2 rounded-xl mb-3 text-center">
-            <div>
-              <div class="text-[8px] text-slate-400 font-bold uppercase">Calories</div>
-              <div id="macroCal" class="text-[11px] font-black text-white">0</div>
-              <div id="macroGoalCal" class="text-[7px] text-slate-500">/ 2600</div>
-            </div>
-            <div>
-              <div class="text-[8px] text-amber-400 font-bold uppercase">Protein</div>
-              <div id="macroProt" class="text-[11px] font-black text-amber-400">0g</div>
-              <div id="macroGoalProt" class="text-[7px] text-slate-500">/ 160g</div>
-            </div>
-            <div>
-              <div class="text-[8px] text-cyan-400 font-bold uppercase">Carbs</div>
-              <div id="macroCarb" class="text-[11px] font-black text-cyan-400">0g</div>
-              <div id="macroGoalCarb" class="text-[7px] text-slate-500">/ 300g</div>
-            </div>
-            <div>
-              <div class="text-[8px] text-rose-400 font-bold uppercase">Fats</div>
-              <div id="macroFat" class="text-[11px] font-black text-rose-400">0g</div>
-              <div id="macroGoalFat" class="text-[7px] text-slate-500">/ 70g</div>
-            </div>
+            <div><div class="text-[8px] text-slate-400 font-bold uppercase">Calories</div><div id="macroCal" class="text-[11px] font-black text-white">0</div><div id="macroGoalCal" class="text-[7px] text-slate-500">/ 2600</div></div>
+            <div><div class="text-[8px] text-amber-400 font-bold uppercase">Protein</div><div id="macroProt" class="text-[11px] font-black text-amber-400">0g</div><div id="macroGoalProt" class="text-[7px] text-slate-500">/ 160g</div></div>
+            <div><div class="text-[8px] text-cyan-400 font-bold uppercase">Carbs</div><div id="macroCarb" class="text-[11px] font-black text-cyan-400">0g</div><div id="macroGoalCarb" class="text-[7px] text-slate-500">/ 300g</div></div>
+            <div><div class="text-[8px] text-rose-400 font-bold uppercase">Fats</div><div id="macroFat" class="text-[11px] font-black text-rose-400">0g</div><div id="macroGoalFat" class="text-[7px] text-slate-500">/ 70g</div></div>
           </div>
           <div id="mealsContainer" class="space-y-2.5"></div>
         </div>
       </details>
 
-      <!-- ZERO TOLERANCE BOUNDARIES (Collapsed by Default) -->
+      <!-- Boundaries -->
       <details class="group bg-slate-900/80 border border-slate-800 rounded-2xl shadow-lg">
         <summary class="flex items-center justify-between p-3.5 cursor-pointer">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
-              <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
-            </div>
-            <div>
-              <h2 class="text-xs font-bold text-white">Avoidance Boundaries</h2>
-              <div class="text-[9px] text-slate-400 font-medium">Defaults to Clean • Expand to fail</div>
-            </div>
+            <div class="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400"><i data-lucide="shield-alert" class="w-3.5 h-3.5"></i></div>
+            <div><h2 class="text-xs font-bold text-white">Avoidance Boundaries</h2><div class="text-[9px] text-slate-400 font-medium">Defaults to Clean • Expand to fail</div></div>
           </div>
           <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform duration-300"></i>
         </summary>
         <div class="px-3.5 pb-3.5 space-y-1.5 border-t border-slate-800/50 pt-3" id="boundariesList"></div>
       </details>
-
     </div>
   </section>
 
   <!-- ========================================== -->
-  <!-- TAB 2: MATRIX (CALENDAR & AUDIT)           -->
+  <!-- TAB 2: MATRIX -->
   <!-- ========================================== -->
   <section id="view_matrix" class="hidden space-y-4">
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-base font-bold text-white" id="monthCalendarTitle">Month</h2>
-          <div class="text-xs text-slate-400">Strict Green = 100% Boundary & Action Completion</div>
-        </div>
+        <div><h2 class="text-base font-bold text-white" id="monthCalendarTitle">Month</h2><div class="text-xs text-slate-400">Strict Green = 100% Boundary & Action</div></div>
         <div class="flex items-center gap-2 text-[10px] font-bold">
           <span class="flex items-center gap-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Complete</span>
           <span class="flex items-center gap-1 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Breached</span>
         </div>
       </div>
-
-      <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] text-slate-500 font-bold mb-2 uppercase">
-        <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
-      </div>
+      <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] text-slate-500 font-bold mb-2 uppercase"><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div></div>
       <div id="monthGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
     </div>
-
     <div class="grid grid-cols-3 gap-2.5">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Green</div>
-        <div id="monthlyFullGreen" class="text-lg font-black text-emerald-400">0</div>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Drone Hours</div>
-        <div id="monthlyDroneCount" class="text-lg font-black text-indigo-400">0 hrs</div>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Adherence</div>
-        <div id="monthlyAdherence" class="text-lg font-black text-cyan-400">100%</div>
-      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center"><div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Green</div><div id="monthlyFullGreen" class="text-lg font-black text-emerald-400">0</div></div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center"><div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Drone Hours</div><div id="monthlyDroneCount" class="text-lg font-black text-indigo-400">0 hrs</div></div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center"><div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Adherence</div><div id="monthlyAdherence" class="text-lg font-black text-cyan-400">100%</div></div>
     </div>
   </section>
 
   <!-- ========================================== -->
-  <!-- TAB 3: ATHLETICS (LIFTOFF ENGINE)          -->
+  <!-- TAB 3: ATHLETICS -->
   <!-- ========================================== -->
   <section id="view_athletics" class="hidden space-y-4">
-
-    <!-- WEIGHT CHART -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
-            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Bodyweight Analytics</h2>
-            <div class="text-[10px] text-slate-400">Fasted trend curve</div>
-          </div>
+          <div class="w-7 h-7 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i></div>
+          <div><h2 class="text-sm font-bold text-white">Bodyweight Analytics</h2><div class="text-[10px] text-slate-400">Fasted trend curve</div></div>
         </div>
         <div id="weightSummaryBadge" class="text-xs font-extrabold text-violet-300">-- lbs</div>
       </div>
@@ -327,65 +229,38 @@
       </div>
     </div>
 
-    <!-- REHAB & PREHAB -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
       <div class="flex items-center gap-2">
-        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-          <i data-lucide="activity" class="w-3.5 h-3.5"></i>
-        </div>
-        <div>
-          <h2 class="text-sm font-bold text-white">Rehab & Mobility Engine</h2>
-          <div class="text-[10px] text-slate-400">Weekly recovery compliance</div>
-        </div>
+        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400"><i data-lucide="activity" class="w-3.5 h-3.5"></i></div>
+        <div><h2 class="text-sm font-bold text-white">Rehab & Mobility Engine</h2><div class="text-[10px] text-slate-400">Weekly recovery compliance</div></div>
       </div>
       <div class="grid grid-cols-2 gap-2.5">
         <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[11px] font-bold text-slate-200">Groin PT</span>
-            <span id="ptWeekTag" class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0/3 wk</span>
-          </div>
+          <div class="flex items-center justify-between mb-1"><span class="text-[11px] font-bold text-slate-200">Groin PT</span><span id="ptWeekTag" class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0/3 wk</span></div>
           <div class="text-[9px] text-slate-500 mb-2 truncate">Adductor iso, copenhagen</div>
-          <button id="btnTogglePtToday" onclick="togglePtToday()" class="w-full py-1 rounded-md text-[10px] font-bold border transition bg-slate-800 text-slate-300 border-slate-700">
-            Log Today's PT
-          </button>
+          <button id="btnTogglePtToday" onclick="togglePtToday()" class="w-full py-1 rounded-md text-[10px] font-bold border transition bg-slate-800 text-slate-300 border-slate-700">Log Today's PT</button>
         </div>
         <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[11px] font-bold text-slate-200">Joint Prehab</span>
-            <span id="prehabWeekTag" class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0/4 wk</span>
-          </div>
+          <div class="flex items-center justify-between mb-1"><span class="text-[11px] font-bold text-slate-200">Joint Prehab</span><span id="prehabWeekTag" class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0/4 wk</span></div>
           <div class="text-[9px] text-slate-500 mb-2 truncate">Hips, t-spine, shoulders</div>
-          <button id="btnTogglePrehabToday" onclick="togglePrehabToday()" class="w-full py-1 rounded-md text-[10px] font-bold border transition bg-slate-800 text-slate-300 border-slate-700">
-            Log Prehab
-          </button>
+          <button id="btnTogglePrehabToday" onclick="togglePrehabToday()" class="w-full py-1 rounded-md text-[10px] font-bold border transition bg-slate-800 text-slate-300 border-slate-700">Log Prehab</button>
         </div>
       </div>
     </div>
 
-    <!-- LIFTOFF ENGINE -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3.5">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
-            <i data-lucide="flame" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">LIFTOFF Logger</h2>
-            <div class="text-[10px] text-slate-400">Mon–Fri PPLPP split</div>
-          </div>
+          <div class="w-7 h-7 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400"><i data-lucide="flame" class="w-3.5 h-3.5"></i></div>
+          <div><h2 class="text-sm font-bold text-white">LIFTOFF Logger</h2><div class="text-[10px] text-slate-400">Mon–Fri PPLPP split</div></div>
         </div>
         <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-800 px-2 py-1 rounded-xl">
-          <i data-lucide="timer" class="w-3 h-3 text-orange-400"></i>
-          <span id="restTimerDisplay" class="text-[10px] font-mono font-black text-orange-300">00:00</span>
+          <i data-lucide="timer" class="w-3 h-3 text-orange-400"></i><span id="restTimerDisplay" class="text-[10px] font-mono font-black text-orange-300">00:00</span>
           <button onclick="toggleRestTimer()" id="restTimerBtn" class="text-[9px] font-bold text-slate-400 hover:text-white ml-1">Start</button>
         </div>
       </div>
-
       <div class="bg-slate-950/60 border border-slate-800/80 p-2.5 rounded-xl space-y-2">
-        <div class="flex items-center justify-between text-[10px] font-bold text-slate-300">
-          <span>Weekly Split:</span>
-          <span id="suggestedSplitBadge" class="text-orange-400"></span>
-        </div>
+        <div class="flex items-center justify-between text-[10px] font-bold text-slate-300"><span>Weekly Split:</span><span id="suggestedSplitBadge" class="text-orange-400"></span></div>
         <div class="grid grid-cols-5 gap-1 text-center">
           <button onclick="loadPplPreset('push1')" class="py-1.5 rounded-lg text-[9px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Push A</button>
           <button onclick="loadPplPreset('pull1')" class="py-1.5 rounded-lg text-[9px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Pull A</button>
@@ -394,85 +269,41 @@
           <button onclick="loadPplPreset('pull2')" class="py-1.5 rounded-lg text-[9px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Pull B</button>
         </div>
       </div>
-
       <div class="flex items-center justify-between pt-1">
-        <div>
-          <span class="text-[11px] font-extrabold text-white" id="currentSessionTitle">Workout Session</span>
-          <span id="workoutStatusTag" class="ml-1.5 text-[8px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Incomplete</span>
-        </div>
+        <div><span class="text-[11px] font-extrabold text-white" id="currentSessionTitle">Workout Session</span><span id="workoutStatusTag" class="ml-1.5 text-[8px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Incomplete</span></div>
         <div class="flex items-center gap-1.5">
-          <button onclick="openExerciseModal()" class="px-2 py-1 bg-orange-600/30 hover:bg-orange-600/40 border border-orange-500/40 text-orange-300 rounded-md text-[10px] font-bold flex items-center gap-1">
-            <i data-lucide="plus" class="w-2.5 h-2.5"></i> Lift
-          </button>
-          <button onclick="toggleWorkoutComplete()" id="btnFinishWorkout" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-md text-[10px] font-bold">
-            Finish Day
-          </button>
+          <button onclick="openExerciseModal()" class="px-2 py-1 bg-orange-600/30 hover:bg-orange-600/40 border border-orange-500/40 text-orange-300 rounded-md text-[10px] font-bold flex items-center gap-1"><i data-lucide="plus" class="w-2.5 h-2.5"></i> Lift</button>
+          <button onclick="toggleWorkoutComplete()" id="btnFinishWorkout" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-md text-[10px] font-bold">Finish Day</button>
         </div>
       </div>
-
       <div id="workoutExercisesList" class="space-y-2.5"></div>
     </div>
   </section>
 
   <!-- ========================================== -->
-  <!-- TAB 4: ACADEMICS & ENGINEERING             -->
+  <!-- TAB 4: ACADEMICS -->
   <!-- ========================================== -->
   <section id="view_academics" class="hidden space-y-4">
     <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
       <div class="flex items-start justify-between gap-3">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-            <i data-lucide="cpu" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2>
-              <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hr • 5x/wk</span>
-            </div>
-            <p id="droneWeeklyStatusTab4" class="text-[10px] text-slate-400 mt-0.5">This Week: 0 / 5 sessions</p>
-          </div>
+          <div class="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400"><i data-lucide="cpu" class="w-4 h-4"></i></div>
+          <div><div class="flex items-center gap-2"><h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2><span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hr • 5x/wk</span></div><p id="droneWeeklyStatusTab4" class="text-[10px] text-slate-400 mt-0.5">This Week: 0 / 5 sessions</p></div>
         </div>
-        <button onclick="toggleDroneSprint()" id="droneTab4Btn" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1 bg-slate-800/80 border-slate-700 text-slate-300">
-          <i data-lucide="clock" class="w-3 h-3"></i>
-          <span>Log 1 Hr</span>
-        </button>
+        <button onclick="toggleDroneSprint()" id="droneTab4Btn" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1 bg-slate-800/80 border-slate-700 text-slate-300"><i data-lucide="clock" class="w-3 h-3"></i><span>Log 1 Hr</span></button>
       </div>
     </div>
-
-    <!-- Coursework -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
-            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Deep Study Log</h2>
-            <div class="text-[10px] text-slate-400">Minimum 1 hour focused session</div>
-          </div>
-        </div>
-        <button onclick="addCourseNote()" class="px-2 py-1 bg-blue-600/30 border border-blue-500/30 text-blue-300 rounded-md text-[10px] font-bold flex items-center gap-1">
-          <i data-lucide="plus" class="w-3 h-3"></i> Note
-        </button>
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400"><i data-lucide="book-open" class="w-3.5 h-3.5"></i></div><div><h2 class="text-sm font-bold text-white">Deep Study Log</h2><div class="text-[10px] text-slate-400">Minimum 1 hour focused session</div></div></div>
+        <button onclick="addCourseNote()" class="px-2 py-1 bg-blue-600/30 border border-blue-500/30 text-blue-300 rounded-md text-[10px] font-bold flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Note</button>
       </div>
       <div id="courseNotesList" class="space-y-2"></div>
     </div>
-
-    <!-- Brainstorm -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
-            <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold text-white">Hardware Brainstorm</h2>
-            <div class="text-[10px] text-slate-400">CAD, firmware, circuits</div>
-          </div>
-        </div>
-        <button onclick="addBrainstormCard()" class="px-2 py-1 bg-purple-600/30 border border-purple-500/30 text-purple-300 rounded-md text-[10px] font-bold flex items-center gap-1">
-          <i data-lucide="plus" class="w-3 h-3"></i> Idea
-        </button>
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400"><i data-lucide="lightbulb" class="w-3.5 h-3.5"></i></div><div><h2 class="text-sm font-bold text-white">Hardware Brainstorm</h2><div class="text-[10px] text-slate-400">CAD, firmware, circuits</div></div></div>
+        <button onclick="addBrainstormCard()" class="px-2 py-1 bg-purple-600/30 border border-purple-500/30 text-purple-300 rounded-md text-[10px] font-bold flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Idea</button>
       </div>
       <div id="brainstormCardsList" class="space-y-2"></div>
     </div>
@@ -484,15 +315,10 @@
 <div id="exerciseModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-4 space-y-3 flex flex-col max-h-[85vh]">
     <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-      <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i data-lucide="dumbbell" class="w-4 h-4 text-orange-400"></i>
-        Exercise Library
-      </h3>
+      <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="dumbbell" class="w-4 h-4 text-orange-400"></i>Exercise Library</h3>
       <button onclick="closeExerciseModal()" class="text-slate-400 hover:text-white">✕</button>
     </div>
-
     <input type="text" id="exerciseSearchInput" placeholder="Search (e.g. Bench, Squat)..." oninput="filterExerciseLibrary(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500" />
-
     <div class="flex gap-1 overflow-x-auto pb-1 text-[9px] custom-scroll">
       <button onclick="setExerciseCategory('all')" class="px-2 py-1 rounded-md bg-slate-800 text-slate-200 shrink-0 font-bold">All</button>
       <button onclick="setExerciseCategory('Chest')" class="px-2 py-1 rounded-md bg-slate-800 text-slate-400 shrink-0 font-bold">Chest</button>
@@ -502,7 +328,6 @@
       <button onclick="setExerciseCategory('Arms')" class="px-2 py-1 rounded-md bg-slate-800 text-slate-400 shrink-0 font-bold">Arms</button>
       <button onclick="setExerciseCategory('Core')" class="px-2 py-1 rounded-md bg-slate-800 text-slate-400 shrink-0 font-bold">Core</button>
     </div>
-
     <div id="exerciseLibraryList" class="flex-1 overflow-y-auto space-y-1.5 custom-scroll pr-1"></div>
   </div>
 </div>
@@ -511,44 +336,22 @@
 <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
-        Settings & Cloud AI
-      </h3>
+      <h3 class="text-sm font-bold text-white flex items-center gap-2"><i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>Settings & Cloud AI</h3>
       <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white">✕</button>
     </div>
-
     <div class="space-y-2.5 text-xs">
-      <div>
-        <label class="block text-slate-400 mb-1">Target Calories</label>
-        <input type="number" id="settingGoalCal" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
-      </div>
+      <div><label class="block text-slate-400 mb-1">Target Calories</label><input type="number" id="settingGoalCal" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" /></div>
       <div class="grid grid-cols-3 gap-2">
-        <div>
-          <label class="block text-amber-400 mb-1">Prot (g)</label>
-          <input type="number" id="settingGoalProt" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
-        </div>
-        <div>
-          <label class="block text-cyan-400 mb-1">Carb (g)</label>
-          <input type="number" id="settingGoalCarb" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
-        </div>
-        <div>
-          <label class="block text-rose-400 mb-1">Fat (g)</label>
-          <input type="number" id="settingGoalFat" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" />
-        </div>
+        <div><label class="block text-amber-400 mb-1">Prot (g)</label><input type="number" id="settingGoalProt" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" /></div>
+        <div><label class="block text-cyan-400 mb-1">Carb (g)</label><input type="number" id="settingGoalCarb" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" /></div>
+        <div><label class="block text-rose-400 mb-1">Fat (g)</label><input type="number" id="settingGoalFat" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-bold" /></div>
       </div>
-
       <div class="pt-2 border-t border-slate-800">
-        <label class="block text-purple-400 font-bold mb-1 flex items-center gap-1.5">
-          <i data-lucide="key" class="w-3.5 h-3.5"></i> Gemini API Key (3.8-Flash)
-        </label>
+        <label class="block text-purple-400 font-bold mb-1 flex items-center gap-1.5"><i data-lucide="key" class="w-3.5 h-3.5"></i> Gemini API Key</label>
         <input type="password" id="settingApiKey" placeholder="Paste Gemini API Key here" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white text-[11px]" />
       </div>
     </div>
-
-    <button onclick="saveSettings()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
-      Save Preferences
-    </button>
+    <button onclick="saveSettings()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">Save Preferences</button>
   </div>
 </div>
 
@@ -557,77 +360,12 @@
   // EXPANDED EXERCISE REPOSITORY
   // ==========================================
   const EXERCISE_DATABASE = [
-    // Chest
-    { id: "barbell_bench", name: "Barbell Bench Press", category: "Chest" },
-    { id: "incline_db_bench", name: "Incline DB Bench Press", category: "Chest" },
-    { id: "incline_barbell_bench", name: "Incline Barbell Bench", category: "Chest" },
-    { id: "flat_db_bench", name: "Flat DB Bench Press", category: "Chest" },
-    { id: "decline_bench", name: "Decline Bench Press", category: "Chest" },
-    { id: "chest_dips", name: "Chest Dips (Weighted/BW)", category: "Chest" },
-    { id: "cable_crossover", name: "Cable Chest Flyes", category: "Chest" },
-    { id: "pec_deck", name: "Pec Deck Machine", category: "Chest" },
-    { id: "machine_chest_press", name: "Machine Chest Press", category: "Chest" },
-    { id: "pushups", name: "Push-ups (Weighted/BW)", category: "Chest" },
-
-    // Back
-    { id: "barbell_deadlift", name: "Conventional Deadlift", category: "Back" },
-    { id: "barbell_row", name: "Barbell Bent-Over Row", category: "Back" },
-    { id: "pullups", name: "Pull-Ups (Weighted/BW)", category: "Back" },
-    { id: "chinups", name: "Chin-Ups (Weighted/BW)", category: "Back" },
-    { id: "lat_pulldown", name: "Lat Pulldown (Wide/Close)", category: "Back" },
-    { id: "seated_cable_row", name: "Seated Cable Row", category: "Back" },
-    { id: "chest_supported_row", name: "Chest Supported T-Bar", category: "Back" },
-    { id: "single_arm_db_row", name: "Single-Arm DB Row", category: "Back" },
-    { id: "lat_prayer", name: "Straight Arm Lat Pulldown", category: "Back" },
-    { id: "db_shrugs", name: "Dumbbell Shrugs", category: "Back" },
-    { id: "rack_pulls", name: "Rack Pulls", category: "Back" },
-
-    // Shoulders
-    { id: "overhead_press", name: "Overhead Barbell Press", category: "Shoulders" },
-    { id: "db_shoulder_press", name: "Seated DB Shoulder Press", category: "Shoulders" },
-    { id: "arnold_press", name: "Arnold Press", category: "Shoulders" },
-    { id: "lateral_raises_db", name: "DB Lateral Raises", category: "Shoulders" },
-    { id: "cable_lateral_raise", name: "Cable Lateral Raises", category: "Shoulders" },
-    { id: "front_raises", name: "DB Front Raises", category: "Shoulders" },
-    { id: "rear_delt_flye", name: "Rear Delt Pec Deck", category: "Shoulders" },
-    { id: "face_pulls", name: "Cable Face Pulls", category: "Shoulders" },
-    { id: "upright_row", name: "EZ-Bar Upright Row", category: "Shoulders" },
-
-    // Legs
-    { id: "barbell_squat", name: "Barbell Back Squat", category: "Legs" },
-    { id: "front_squat", name: "Barbell Front Squat", category: "Legs" },
-    { id: "hack_squat", name: "Machine Hack Squat", category: "Legs" },
-    { id: "romanian_deadlift", name: "Romanian Deadlift (RDL)", category: "Legs" },
-    { id: "leg_press", name: "45-Degree Leg Press", category: "Legs" },
-    { id: "bulgarian_split_squat", name: "Bulgarian Split Squats", category: "Legs" },
-    { id: "walking_lunges", name: "DB Walking Lunges", category: "Legs" },
-    { id: "hip_thrust", name: "Barbell Hip Thrusts", category: "Legs" },
-    { id: "leg_extensions", name: "Leg Extensions", category: "Legs" },
-    { id: "hamstring_curls", name: "Seated Leg Curls", category: "Legs" },
-    { id: "lying_leg_curls", name: "Lying Leg Curls", category: "Legs" },
-    { id: "standing_calf_raise", name: "Standing Calf Raises", category: "Legs" },
-    { id: "seated_calf_raise", name: "Seated Calf Raises", category: "Legs" },
-    { id: "copenhagen_plank", name: "Copenhagen Planks", category: "Legs" }, // Functional/Rehab
-
-    // Arms
-    { id: "barbell_curl", name: "Barbell Bicep Curl", category: "Arms" },
-    { id: "incline_db_curl", name: "Incline DB Curl", category: "Arms" },
-    { id: "hammer_curls", name: "DB Hammer Curls", category: "Arms" },
-    { id: "cable_curls", name: "Cable Rope Curls", category: "Arms" },
-    { id: "preacher_curl", name: "EZ-Bar Preacher Curl", category: "Arms" },
-    { id: "concentration_curl", name: "Concentration Curls", category: "Arms" },
-    { id: "skull_crushers", name: "EZ-Bar Skull Crushers", category: "Arms" },
-    { id: "french_press", name: "French Press", category: "Arms" },
-    { id: "tricep_rope_pushdown", name: "Cable Rope Pushdown", category: "Arms" },
-    { id: "overhead_tricep_ext", name: "Overhead Cable Tricep Ext", category: "Arms" },
-    { id: "tricep_kickbacks", name: "DB Tricep Kickbacks", category: "Arms" },
-
-    // Core / Functional
-    { id: "hanging_leg_raise", name: "Hanging Leg Raises", category: "Core" },
-    { id: "cable_crunch", name: "Kneeling Cable Crunches", category: "Core" },
-    { id: "ab_wheel", name: "Ab Wheel Rollouts", category: "Core" },
-    { id: "weighted_plank", name: "Weighted Planks", category: "Core" },
-    { id: "russian_twists", name: "Weighted Russian Twists", category: "Core" }
+    { id: "barbell_bench", name: "Barbell Bench Press", category: "Chest" }, { id: "incline_db_bench", name: "Incline DB Bench Press", category: "Chest" }, { id: "incline_barbell_bench", name: "Incline Barbell Bench", category: "Chest" }, { id: "flat_db_bench", name: "Flat DB Bench Press", category: "Chest" }, { id: "decline_bench", name: "Decline Bench Press", category: "Chest" }, { id: "chest_dips", name: "Chest Dips (Weighted/BW)", category: "Chest" }, { id: "cable_crossover", name: "Cable Chest Flyes", category: "Chest" }, { id: "pec_deck", name: "Pec Deck Machine", category: "Chest" }, { id: "machine_chest_press", name: "Machine Chest Press", category: "Chest" }, { id: "pushups", name: "Push-ups (Weighted/BW)", category: "Chest" },
+    { id: "barbell_deadlift", name: "Conventional Deadlift", category: "Back" }, { id: "barbell_row", name: "Barbell Bent-Over Row", category: "Back" }, { id: "pullups", name: "Pull-Ups (Weighted/BW)", category: "Back" }, { id: "chinups", name: "Chin-Ups (Weighted/BW)", category: "Back" }, { id: "lat_pulldown", name: "Lat Pulldown (Wide/Close)", category: "Back" }, { id: "seated_cable_row", name: "Seated Cable Row", category: "Back" }, { id: "chest_supported_row", name: "Chest Supported T-Bar", category: "Back" }, { id: "single_arm_db_row", name: "Single-Arm DB Row", category: "Back" }, { id: "lat_prayer", name: "Straight Arm Lat Pulldown", category: "Back" }, { id: "db_shrugs", name: "Dumbbell Shrugs", category: "Back" }, { id: "rack_pulls", name: "Rack Pulls", category: "Back" },
+    { id: "overhead_press", name: "Overhead Barbell Press", category: "Shoulders" }, { id: "db_shoulder_press", name: "Seated DB Shoulder Press", category: "Shoulders" }, { id: "arnold_press", name: "Arnold Press", category: "Shoulders" }, { id: "lateral_raises_db", name: "DB Lateral Raises", category: "Shoulders" }, { id: "cable_lateral_raise", name: "Cable Lateral Raises", category: "Shoulders" }, { id: "front_raises", name: "DB Front Raises", category: "Shoulders" }, { id: "rear_delt_flye", name: "Rear Delt Pec Deck", category: "Shoulders" }, { id: "face_pulls", name: "Cable Face Pulls", category: "Shoulders" }, { id: "upright_row", name: "EZ-Bar Upright Row", category: "Shoulders" },
+    { id: "barbell_squat", name: "Barbell Back Squat", category: "Legs" }, { id: "front_squat", name: "Barbell Front Squat", category: "Legs" }, { id: "hack_squat", name: "Machine Hack Squat", category: "Legs" }, { id: "romanian_deadlift", name: "Romanian Deadlift (RDL)", category: "Legs" }, { id: "leg_press", name: "45-Degree Leg Press", category: "Legs" }, { id: "bulgarian_split_squat", name: "Bulgarian Split Squats", category: "Legs" }, { id: "walking_lunges", name: "DB Walking Lunges", category: "Legs" }, { id: "hip_thrust", name: "Barbell Hip Thrusts", category: "Legs" }, { id: "leg_extensions", name: "Leg Extensions", category: "Legs" }, { id: "hamstring_curls", name: "Seated Leg Curls", category: "Legs" }, { id: "lying_leg_curls", name: "Lying Leg Curls", category: "Legs" }, { id: "standing_calf_raise", name: "Standing Calf Raises", category: "Legs" }, { id: "seated_calf_raise", name: "Seated Calf Raises", category: "Legs" }, { id: "copenhagen_plank", name: "Copenhagen Planks", category: "Legs" },
+    { id: "barbell_curl", name: "Barbell Bicep Curl", category: "Arms" }, { id: "incline_db_curl", name: "Incline DB Curl", category: "Arms" }, { id: "hammer_curls", name: "DB Hammer Curls", category: "Arms" }, { id: "cable_curls", name: "Cable Rope Curls", category: "Arms" }, { id: "preacher_curl", name: "EZ-Bar Preacher Curl", category: "Arms" }, { id: "concentration_curl", name: "Concentration Curls", category: "Arms" }, { id: "skull_crushers", name: "EZ-Bar Skull Crushers", category: "Arms" }, { id: "french_press", name: "French Press", category: "Arms" }, { id: "tricep_rope_pushdown", name: "Cable Rope Pushdown", category: "Arms" }, { id: "overhead_tricep_ext", name: "Overhead Cable Tricep Ext", category: "Arms" }, { id: "tricep_kickbacks", name: "DB Tricep Kickbacks", category: "Arms" },
+    { id: "hanging_leg_raise", name: "Hanging Leg Raises", category: "Core" }, { id: "cable_crunch", name: "Kneeling Cable Crunches", category: "Core" }, { id: "ab_wheel", name: "Ab Wheel Rollouts", category: "Core" }, { id: "weighted_plank", name: "Weighted Planks", category: "Core" }, { id: "russian_twists", name: "Weighted Russian Twists", category: "Core" }
   ];
 
   const PPL_PRESETS = {
@@ -638,15 +376,8 @@
     pull2: { title: "Pull B (Deadlift/Rows)", exercises: ["barbell_deadlift", "lat_pulldown", "single_arm_db_row", "rear_delt_flye", "barbell_curl", "preacher_curl"] }
   };
 
-  // ==========================================
-  // CONFIGURATION & DIRECTIVES
-  // ==========================================
-  const todayObj = new Date();
-  const tomorrowObj = new Date(todayObj);
-  tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-
-  const START_DATE_KEY = localStorage.getItem('protocol_start_date') || getDayKey(tomorrowObj);
-  localStorage.setItem('protocol_start_date', START_DATE_KEY);
+  const todayObj = new Date(); const tomorrowObj = new Date(todayObj); tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+  const START_DATE_KEY = localStorage.getItem('protocol_start_date') || getDayKey(tomorrowObj); localStorage.setItem('protocol_start_date', START_DATE_KEY);
 
   const BOUNDARIES = [
     { id: "b_morning_phone", label: "Zero Phone First 60 Min", desc: "No notifications or screen dopamine upon waking" },
@@ -675,91 +406,46 @@
     { id: "a_shower", label: "Shower Post-Workout", desc: "Wash away sweat to prevent breakouts" }
   ];
 
-  const MEALS = [
-    { id: "m_breakfast", label: "Breakfast" }, { id: "m_lunch", label: "Lunch" },
-    { id: "m_dinner", label: "Dinner" }, { id: "m_snacks", label: "Post-Workout / Snacks" }
-  ];
+  const MEALS = [{ id: "m_breakfast", label: "Breakfast" }, { id: "m_lunch", label: "Lunch" }, { id: "m_dinner", label: "Dinner" }, { id: "m_snacks", label: "Post-Workout / Snacks" }];
 
-  // APPLICATION STATE
-  let currentDate = new Date();
-  let currentMainTab = 'today';
+  let currentDate = new Date(); let currentMainTab = 'today';
   let appData = JSON.parse(localStorage.getItem('protocol_os_master') || '{}');
-  let userGoals = JSON.parse(localStorage.getItem('protocol_os_goals') || JSON.stringify({
-    calories: 2600, protein: 160, carbs: 300, fat: 70, apiKey: ""
-  }));
-
-  let restTimerSeconds = 0;
-  let restTimerInterval = null;
+  let userGoals = JSON.parse(localStorage.getItem('protocol_os_goals') || JSON.stringify({ calories: 2600, protein: 160, carbs: 300, fat: 70, apiKey: "" }));
+  let restTimerSeconds = 0; let restTimerInterval = null;
+  
+  // Ephemeral memory for uploaded meal images (clears on refresh/send)
+  const mealImages = { m_breakfast: [], m_lunch: [], m_dinner: [], m_snacks: [] };
 
   function getDayKey(date) { return date.toISOString().slice(0, 10); }
   function isDateBeforeStart(date) { return getDayKey(date) < START_DATE_KEY; }
-  function isDateInFuture(date) {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const target = new Date(date); target.setHours(0,0,0,0);
-    return target > today;
-  }
-
+  function isDateInFuture(date) { const today = new Date(); today.setHours(0,0,0,0); const target = new Date(date); target.setHours(0,0,0,0); return target > today; }
+  
   function getDayRecord(dateKey) {
     if (!appData[dateKey]) {
       appData[dateKey] = {
-        boundaries: {}, actions: {}, water: { b1000: 0, b710: 0 },
-        weight: null, pt: false, prehab: false, drone: { done: false, notes: '' },
-        meals: {
-          m_breakfast: { text: '', cal: 0, p: 0, c: 0, f: 0 },
-          m_lunch: { text: '', cal: 0, p: 0, c: 0, f: 0 },
-          m_dinner: { text: '', cal: 0, p: 0, c: 0, f: 0 },
-          m_snacks: { text: '', cal: 0, p: 0, c: 0, f: 0 }
-        },
-        workout: { title: "Custom Session", completed: false, exercises: [] },
-        academics: { courseNotes: [], brainstorms: [] }
+        boundaries: {}, actions: {}, water: { b1000: 0, b710: 0 }, weight: null, pt: false, prehab: false, drone: { done: false, notes: '' },
+        meals: { m_breakfast: { text: '', cal: 0, p: 0, c: 0, f: 0 }, m_lunch: { text: '', cal: 0, p: 0, c: 0, f: 0 }, m_dinner: { text: '', cal: 0, p: 0, c: 0, f: 0 }, m_snacks: { text: '', cal: 0, p: 0, c: 0, f: 0 } },
+        workout: { title: "Custom Session", completed: false, exercises: [] }, academics: { courseNotes: [], brainstorms: [] }
       };
     }
     return appData[dateKey];
   }
-
   function persist() { localStorage.setItem('protocol_os_master', JSON.stringify(appData)); render(); }
   function shiftDate(days) { currentDate.setDate(currentDate.getDate() + days); render(); }
-
   function switchMainTab(tab) {
-    currentMainTab = tab;
-    ['today', 'matrix', 'athletics', 'academics'].forEach(t => {
+    currentMainTab = tab; ['today', 'matrix', 'athletics', 'academics'].forEach(t => {
       document.getElementById(`view_${t}`).classList.toggle('hidden', t !== tab);
-      const btn = document.getElementById(`navBtn_${t}`);
-      btn.className = (t === tab)
-        ? "py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-        : "py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200";
-    });
-    render();
+      document.getElementById(`navBtn_${t}`).className = (t === tab) ? "py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200";
+    }); render();
   }
 
   function incrementBottle(type) { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.water[type] = (rec.water[type] || 0) + 1; syncAutomations(rec); persist(); }
   function decrementBottle(type) { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); if ((rec.water[type] || 0) > 0) { rec.water[type]--; syncAutomations(rec); persist(); } }
   function getWaterVolume(water) { return ((water.b1000 || 0) * 1000) + ((water.b710 || 0) * 710); }
-
   function saveTodayWeight(val) { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.weight = val ? parseFloat(val) : null; persist(); }
-
-  function getWeekDateKeys(d) {
-    const current = new Date(d);
-    const day = current.getDay();
-    const diff = current.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(current.setDate(diff));
-    const keys = [];
-    for (let i = 0; i < 7; i++) {
-      const nextDay = new Date(monday); nextDay.setDate(monday.getDate() + i); keys.push(getDayKey(nextDay));
-    }
-    return keys;
-  }
-
-  function getWeeklyStat(metricKey, date) {
-    return getWeekDateKeys(date).reduce((acc, k) => {
-      const rec = appData[k];
-      if (!rec) return acc;
-      if (metricKey === 'drone') return acc + (rec.drone?.done ? 1 : 0);
-      if (metricKey === 'pt') return acc + (rec.pt ? 1 : 0);
-      if (metricKey === 'prehab') return acc + (rec.prehab ? 1 : 0);
-      return acc;
-    }, 0);
-  }
+  
+  function getWeekDateKeys(d) { const current = new Date(d); const diff = current.getDate() - current.getDay() + (current.getDay() === 0 ? -6 : 1); const monday = new Date(current.setDate(diff)); const keys = []; for (let i = 0; i < 7; i++) { const nextDay = new Date(monday); nextDay.setDate(monday.getDate() + i); keys.push(getDayKey(nextDay)); } return keys; }
+  function getWeeklyStat(metricKey, date) { return getWeekDateKeys(date).reduce((acc, k) => { const rec = appData[k]; if (!rec) return acc; if (metricKey === 'drone') return acc + (rec.drone?.done ? 1 : 0); if (metricKey === 'pt') return acc + (rec.pt ? 1 : 0); if (metricKey === 'prehab') return acc + (rec.prehab ? 1 : 0); return acc; }, 0); }
 
   function togglePtToday() { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.pt = !rec.pt; syncAutomations(rec); persist(); }
   function togglePrehabToday() { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.prehab = !rec.prehab; syncAutomations(rec); persist(); }
@@ -767,35 +453,18 @@
   function setBoundary(bId, val) { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.boundaries[bId] = val; persist(); }
 
   function syncAutomations(rec) {
-    rec.actions['a_water'] = getWaterVolume(rec.water) >= 4000;
-    rec.actions['a_drone'] = !!rec.drone.done;
-    rec.actions['a_pt'] = !!rec.pt;
-    rec.actions['a_prehab'] = !!rec.prehab;
-    rec.actions['a_lift'] = !!rec.workout?.completed;
+    rec.actions['a_water'] = getWaterVolume(rec.water) >= 4000; rec.actions['a_drone'] = !!rec.drone.done; rec.actions['a_pt'] = !!rec.pt; rec.actions['a_prehab'] = !!rec.prehab; rec.actions['a_lift'] = !!rec.workout?.completed;
     rec.actions['a_protein'] = Object.values(rec.meals).reduce((s, m) => s + (Number(m.p) || 0), 0) >= (userGoals.protein || 160);
   }
-
   function evaluateDayStatus(rec, date) {
-    if (isDateBeforeStart(date)) return "unactivated";
-    if (isDateInFuture(date)) return "locked";
-    if (Object.values(rec.boundaries || {}).some(v => v === true)) return "breached";
-    const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
-    return ACTIONS.every(a => (a.weekdayOnly && isWeekend) || rec.actions[a.id]) ? "complete" : "pending";
+    if (isDateBeforeStart(date)) return "unactivated"; if (isDateInFuture(date)) return "locked"; if (Object.values(rec.boundaries || {}).some(v => v === true)) return "breached";
+    const isWeekend = (date.getDay() === 0 || date.getDay() === 6); return ACTIONS.every(a => (a.weekdayOnly && isWeekend) || rec.actions[a.id]) ? "complete" : "pending";
   }
 
   function loadPplPreset(presetKey) {
-    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
-    const rec = getDayRecord(getDayKey(currentDate));
-    const preset = PPL_PRESETS[presetKey];
-    if (!preset) return;
-    rec.workout.title = preset.title;
-    rec.workout.exercises = preset.exercises.map(exId => {
-      const meta = EXERCISE_DATABASE.find(e => e.id === exId) || { name: exId, category: "Other" };
-      return { id: exId, name: meta.name, category: meta.category, sets: [{ weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }] };
-    });
-    persist();
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); const preset = PPL_PRESETS[presetKey]; if (!preset) return;
+    rec.workout.title = preset.title; rec.workout.exercises = preset.exercises.map(exId => { const meta = EXERCISE_DATABASE.find(e => e.id === exId) || { name: exId, category: "Other" }; return { id: exId, name: meta.name, category: meta.category, sets: [{ weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }] }; }); persist();
   }
-
   function toggleWorkoutComplete() { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.workout.completed = !rec.workout.completed; syncAutomations(rec); persist(); }
   function addSet(exIdx) { const rec = getDayRecord(getDayKey(currentDate)); const ex = rec.workout.exercises[exIdx]; if (ex) { const lastSet = ex.sets[ex.sets.length - 1] || { weight: 0, reps: 0 }; ex.sets.push({ weight: lastSet.weight, reps: lastSet.reps, done: false }); persist(); } }
   function removeSet(exIdx, sIdx) { const rec = getDayRecord(getDayKey(currentDate)); const ex = rec.workout.exercises[exIdx]; if (ex && ex.sets.length > 1) { ex.sets.splice(sIdx, 1); persist(); } }
@@ -807,20 +476,13 @@
   function closeExerciseModal() { document.getElementById('exerciseModal').classList.add('hidden'); }
   function setExerciseCategory(cat) { currentCategoryFilter = cat; filterExerciseLibrary(document.getElementById('exerciseSearchInput').value); }
   function filterExerciseLibrary(query) {
-    const container = document.getElementById('exerciseLibraryList'); container.innerHTML = '';
-    const q = query.toLowerCase().trim();
-    EXERCISE_DATABASE.filter(ex => (currentCategoryFilter === 'all' || ex.category === currentCategoryFilter) && (ex.name.toLowerCase().includes(q) || ex.category.toLowerCase().includes(q)))
-      .forEach(ex => {
-        const btn = document.createElement('button');
-        btn.className = "w-full text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500/50 flex items-center justify-between transition";
-        btn.innerHTML = `<div><div class="text-[11px] font-bold text-slate-200">${ex.name}</div><div class="text-[9px] text-slate-500">${ex.category}</div></div><span class="text-orange-400 text-xs font-black">+ Add</span>`;
-        btn.onclick = () => {
-          const rec = getDayRecord(getDayKey(currentDate));
-          rec.workout.exercises.push({ id: ex.id, name: ex.name, category: ex.category, sets: [{ weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }] });
-          persist(); closeExerciseModal();
-        };
-        container.appendChild(btn);
-      });
+    const container = document.getElementById('exerciseLibraryList'); container.innerHTML = ''; const q = query.toLowerCase().trim();
+    EXERCISE_DATABASE.filter(ex => (currentCategoryFilter === 'all' || ex.category === currentCategoryFilter) && (ex.name.toLowerCase().includes(q) || ex.category.toLowerCase().includes(q))).forEach(ex => {
+      const btn = document.createElement('button'); btn.className = "w-full text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500/50 flex items-center justify-between transition";
+      btn.innerHTML = `<div><div class="text-[11px] font-bold text-slate-200">${ex.name}</div><div class="text-[9px] text-slate-500">${ex.category}</div></div><span class="text-orange-400 text-xs font-black">+ Add</span>`;
+      btn.onclick = () => { const rec = getDayRecord(getDayKey(currentDate)); rec.workout.exercises.push({ id: ex.id, name: ex.name, category: ex.category, sets: [{ weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }, { weight: 0, reps: 0, done: false }] }); persist(); closeExerciseModal(); };
+      container.appendChild(btn);
+    });
   }
 
   function toggleRestTimer() {
@@ -828,10 +490,7 @@
     if (restTimerInterval) { clearInterval(restTimerInterval); restTimerInterval = null; btn.innerText = "Start"; }
     else {
       restTimerSeconds = 0; btn.innerText = "Stop";
-      restTimerInterval = setInterval(() => {
-        restTimerSeconds++;
-        document.getElementById('restTimerDisplay').innerText = `${Math.floor(restTimerSeconds / 60).toString().padStart(2, '0')}:${(restTimerSeconds % 60).toString().padStart(2, '0')}`;
-      }, 1000);
+      restTimerInterval = setInterval(() => { restTimerSeconds++; document.getElementById('restTimerDisplay').innerText = `${Math.floor(restTimerSeconds / 60).toString().padStart(2, '0')}:${(restTimerSeconds % 60).toString().padStart(2, '0')}`; }, 1000);
     }
   }
 
@@ -842,42 +501,102 @@
   function updateBrainstormBody(idx, val) { const rec = getDayRecord(getDayKey(currentDate)); if (rec.academics.brainstorms[idx]) { rec.academics.brainstorms[idx].body = val; localStorage.setItem('protocol_os_master', JSON.stringify(appData)); } }
   function deleteBrainstormCard(idx) { const rec = getDayRecord(getDayKey(currentDate)); rec.academics.brainstorms.splice(idx, 1); persist(); }
 
-  // API 3.8-FLASH FIX APPLIED HERE:
-  async function parseCloudAiMacros(queryText) {
-    if (!userGoals.apiKey || userGoals.apiKey.trim().length === 0) { alert("Please paste Gemini API Key in Settings."); toggleSettingsModal(); return null; }
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(userGoals.apiKey.trim())}`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: `Estimate total nutrition for this meal: "${queryText}". Output strictly valid JSON without formatting or markdown: {"cal": number, "p": number, "c": number, "f": number}` }] }] })
+  // ==========================================
+  // IMAGE HANDLING & DUAL AI MACRO ESTIMATOR
+  // ==========================================
+  function handleImageSelection(event, mealId) {
+    mealImages[mealId] = Array.from(event.target.files);
+    renderImagePreviews(mealId);
+  }
+
+  function renderImagePreviews(mealId) {
+    const container = document.getElementById(`preview_${mealId}`);
+    if (!container) return;
+    container.innerHTML = '';
+    const files = mealImages[mealId] || [];
+    files.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      const img = document.createElement('img');
+      img.src = url;
+      img.className = "w-10 h-10 object-cover rounded-md border border-slate-700 shrink-0";
+      container.appendChild(img);
     });
+  }
+
+  async function parseCloudAiMacros(queryText, isUcsb, files) {
+    if (!userGoals.apiKey || userGoals.apiKey.trim().length === 0) { alert("Please paste Gemini API Key in Settings."); toggleSettingsModal(); return null; }
+    
+    const prompt = `Estimate total nutrition for this meal: "${queryText}". 
+    ${isUcsb ? "CRITICAL: This is a meal from a UCSB dining hall (Carrillo, De La Guerra, Portola, Ortega). Please actively use your knowledge of UCSB dining menus, recipes, and standard university food services to provide the most accurate nutritional estimation possible based on what they serve." : ""}
+    If the user attached images and they are too blurry, too far away, or the food is completely covered/closed preventing a reasonable estimation, set "needs_more_photos" to true and provide a short, direct "reason" (e.g. 'Please open the container' or 'Too blurry').
+    Output strictly valid JSON without formatting or markdown: {"cal": number, "p": number, "c": number, "f": number, "needs_more_photos": boolean, "reason": string}`;
+    
+    const parts = [{ text: prompt }];
+
+    for (const file of files) {
+      const base64Data = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(file);
+      });
+      parts.push({ inlineData: { mimeType: file.type, data: base64Data } });
+    }
+
+    // Using gemini-1.5-flash as the actual stable vision model
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(userGoals.apiKey.trim())}`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: parts }] })
+    });
+    
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error?.message || `HTTP ${res.status}`);
     const data = await res.json();
     const parsed = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
-    return { cal: Math.round(Number(parsed.cal) || 0), p: Math.round(Number(parsed.p) || 0), c: Math.round(Number(parsed.c) || 0), f: Math.round(Number(parsed.f) || 0) };
+    return parsed; // {cal, p, c, f, needs_more_photos, reason}
   }
 
   function parseLocalMacros(queryText) {
-    const text = queryText.toLowerCase().trim();
-    if (!text) return { cal: 0, p: 0, c: 0, f: 0 };
+    const text = queryText.toLowerCase().trim(); if (!text) return { cal: 0, p: 0, c: 0, f: 0 };
     let cal = 0, p = 0, c = 0, f = 0;
     const ozMatch = text.match(/(\d+(\.\d+)?)\s*oz\s*(chicken|breast|steak|beef|salmon|turkey|tuna|fish)/);
     if (ozMatch) { const oz = parseFloat(ozMatch[1]); const isC = text.includes('chicken') || text.includes('turkey'); p += Math.round(oz * 7.5); f += Math.round(oz * (isC ? 1.5 : 4)); cal += Math.round(oz * (isC ? 45 : 65)); }
     const eggMatch = text.match(/(\d+)\s*(whole\s*)?eggs?/); if (eggMatch) { const ct = parseInt(eggMatch[1], 10); cal += ct * 72; p += ct * 6; f += ct * 5; c += ct * 0.5; }
     const scoopMatch = text.match(/(\d+)\s*scoops?/); if (scoopMatch) { const ct = parseInt(scoopMatch[1], 10); cal += ct * 125; p += ct * 25; c += ct * 3; f += ct * 1.5; }
     const toastMatch = text.match(/(\d+)\s*slices?\s*(bread|toast|sourdough)?/); if (toastMatch) { const ct = parseInt(toastMatch[1], 10); cal += ct * 80; c += ct * 15; p += ct * 3; f += ct * 1; }
-    if (text.includes("greek yogurt")) { cal += 130; p += 18; c += 7; }
-    if (text.includes("fairlife")) { cal += 150; p += 30; c += 6; f += 2.5; }
+    if (text.includes("greek yogurt")) { cal += 130; p += 18; c += 7; } if (text.includes("fairlife")) { cal += 150; p += 30; c += 6; f += 2.5; }
     if (text.includes("chipotle")) { const d = text.includes("double"); cal += d ? 950 : 750; p += d ? 55 : 38; c += 80; f += d ? 32 : 24; }
     if (cal === 0 && p === 0) { cal = 400; p = 25; c = 45; f = 14; }
     return { cal, p, c, f };
   }
 
-  function triggerLocalEst(mId) { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); const m = rec.meals[mId]; if (m.text) { const est = parseLocalMacros(m.text); m.cal = est.cal; m.p = est.p; m.c = est.c; m.f = est.f; syncAutomations(rec); persist(); } }
-  async function triggerCloudAiEst(mId) {
-    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); const m = rec.meals[mId]; if (!m.text) return;
-    const btn = document.getElementById(`btnCloud_${mId}`); const orig = btn ? btn.innerHTML : ''; if (btn) { btn.innerHTML = `<span class="animate-pulse">Thinking...</span>`; btn.disabled = true; }
-    try { const est = await parseCloudAiMacros(m.text); if (est) { m.cal = est.cal; m.p = est.p; m.c = est.c; m.f = est.f; syncAutomations(rec); persist(); } }
-    catch (err) { alert(`API Error: ${err.message}`); } finally { if (btn) { btn.innerHTML = orig; btn.disabled = false; lucide.createIcons(); } }
+  function triggerLocalEst(mId) { 
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); const m = rec.meals[mId]; 
+    if (m.text) { const est = parseLocalMacros(m.text); m.cal = est.cal; m.p = est.p; m.c = est.c; m.f = est.f; syncAutomations(rec); persist(); } 
   }
+
+  async function triggerCloudAiEst(mId) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; 
+    const rec = getDayRecord(getDayKey(currentDate)); const m = rec.meals[mId]; 
+    const files = mealImages[mId] || [];
+    if (!m.text && files.length === 0) return;
+    
+    const isUcsb = document.getElementById(`ucsb_${mId}`)?.checked || false;
+    const btn = document.getElementById(`btnCloud_${mId}`); const orig = btn ? btn.innerHTML : ''; 
+    if (btn) { btn.innerHTML = `<span class="animate-pulse">Thinking...</span>`; btn.disabled = true; }
+    
+    try { 
+      const est = await parseCloudAiMacros(m.text, isUcsb, files); 
+      if (est) { 
+        if (est.needs_more_photos) {
+          alert(`AI Needs Better Photos:\n\n${est.reason}`);
+        } else {
+          m.cal = est.cal; m.p = est.p; m.c = est.c; m.f = est.f; 
+          mealImages[mId] = []; // Clear images upon success to free memory
+          syncAutomations(rec); persist(); 
+        }
+      } 
+    } catch (err) { alert(`API Error: ${err.message}`); } finally { if (btn) { btn.innerHTML = orig; btn.disabled = false; lucide.createIcons(); } }
+  }
+
   function updateMealField(mId, field, val) { if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return; const rec = getDayRecord(getDayKey(currentDate)); rec.meals[mId][field] = field === 'text' ? val : (parseInt(val, 10) || 0); syncAutomations(rec); persist(); }
 
   // MAIN RENDER LOOP
@@ -926,8 +645,50 @@
     MEALS.forEach(m => {
       const mD = (isPrior || isFuture) ? { text: '', cal: 0, p: 0, c: 0, f: 0 } : (rec.meals[m.id] || { text: '', cal: 0, p: 0, c: 0, f: 0 }); tCal += Number(mD.cal) || 0; tP += Number(mD.p) || 0; tC += Number(mD.c) || 0; tF += Number(mD.f) || 0;
       const card = document.createElement('div'); card.className = 'bg-slate-950/50 border border-slate-800 rounded-xl p-2.5 space-y-1.5';
-      card.innerHTML = `<div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-200">${m.label}</span><div class="flex items-center gap-1.5 text-[9px]"><span class="text-slate-400 font-semibold">${mD.cal || 0} kcal</span><span class="text-amber-400 font-bold">${mD.p || 0}g P</span><span class="text-cyan-400 font-bold">${mD.c || 0}g C</span><span class="text-rose-400 font-bold">${mD.f || 0}g F</span></div></div><input type="text" value="${mD.text || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="Describe food (e.g. 8oz chicken, 2 eggs)..." onchange="updateMealField('${m.id}', 'text', this.value)" class="w-full bg-slate-900/80 border border-slate-800 rounded-lg px-2 py-1 text-[10px] text-slate-200 placeholder-slate-600" /><div class="flex items-center gap-1.5"><button type="button" ${isPrior || isFuture ? 'disabled' : ''} onclick="triggerLocalEst('${m.id}')" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-[9px] font-bold text-slate-300 rounded-lg border border-slate-700 transition">⚡ Local Est</button><button type="button" id="btnCloud_${m.id}" ${isPrior || isFuture ? 'disabled' : ''} onclick="triggerCloudAiEst('${m.id}')" class="flex-1 py-1 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 hover:from-purple-900/60 text-[9px] font-bold text-indigo-300 rounded-lg border border-indigo-500/40 transition">✨ AI Cloud API</button></div><div class="grid grid-cols-4 gap-1 pt-0.5"><div><input type="number" value="${mD.cal || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'cal', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-white text-center font-bold" /></div><div><input type="number" value="${mD.p || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'p', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-amber-400 text-center font-bold" /></div><div><input type="number" value="${mD.c || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-cyan-400 text-center font-bold" /></div><div><input type="number" value="${mD.f || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'f', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-rose-400 text-center font-bold" /></div></div>`;
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-200">${m.label}</span>
+          <div class="flex items-center gap-1.5 text-[9px]">
+            <span class="text-slate-400 font-semibold">${mD.cal || 0} kcal</span>
+            <span class="text-amber-400 font-bold">${mD.p || 0}g P</span>
+            <span class="text-cyan-400 font-bold">${mD.c || 0}g C</span>
+            <span class="text-rose-400 font-bold">${mD.f || 0}g F</span>
+          </div>
+        </div>
+
+        <div class="flex gap-1.5 items-center">
+          <input type="text" value="${mD.text || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="Describe meal (e.g. 2 eggs) or attach photo..." onchange="updateMealField('${m.id}', 'text', this.value)" class="flex-1 bg-slate-900/80 border border-slate-800 rounded-lg px-2 py-1.5 text-[10px] text-slate-200 placeholder-slate-600" />
+          <label class="p-1.5 bg-slate-800 rounded-lg text-slate-400 hover:text-white cursor-pointer transition flex items-center justify-center shrink-0 border border-slate-700">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+            <input type="file" accept="image/*" multiple class="hidden" onchange="handleImageSelection(event, '${m.id}')" ${isPrior || isFuture ? 'disabled' : ''} />
+          </label>
+        </div>
+
+        <div class="flex items-center justify-between mt-0.5">
+          <label class="flex items-center gap-1.5 text-[9px] text-slate-400 cursor-pointer">
+            <input type="checkbox" id="ucsb_${m.id}" class="rounded bg-slate-900 border-slate-700 w-3 h-3 text-emerald-500 focus:ring-0" ${isPrior || isFuture ? 'disabled' : ''} />
+            UCSB Dining Hall Meal
+          </label>
+        </div>
+        
+        <div id="preview_${m.id}" class="flex gap-1 overflow-x-auto custom-scroll"></div>
+
+        <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-800/50 mt-1">
+          <button type="button" ${isPrior || isFuture ? 'disabled' : ''} onclick="triggerLocalEst('${m.id}')" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[9px] font-bold text-slate-300 rounded-lg border border-slate-700 transition">⚡ Local</button>
+          <button type="button" id="btnCloud_${m.id}" ${isPrior || isFuture ? 'disabled' : ''} onclick="triggerCloudAiEst('${m.id}')" class="flex-[1.5] py-1.5 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 hover:from-purple-900/60 text-[9px] font-bold text-indigo-300 rounded-lg border border-indigo-500/40 transition flex items-center justify-center gap-1"><i data-lucide="sparkles" class="w-3 h-3"></i> ✨ AI Vision</button>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1 pt-0.5">
+          <div><input type="number" value="${mD.cal || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="Cal" onchange="updateMealField('${m.id}', 'cal', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-white text-center font-bold" /></div>
+          <div><input type="number" value="${mD.p || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="Pro" onchange="updateMealField('${m.id}', 'p', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-amber-400 text-center font-bold" /></div>
+          <div><input type="number" value="${mD.c || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="Carb" onchange="updateMealField('${m.id}', 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-cyan-400 text-center font-bold" /></div>
+          <div><input type="number" value="${mD.f || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="Fat" onchange="updateMealField('${m.id}', 'f', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[9px] text-rose-400 text-center font-bold" /></div>
+        </div>
+      `;
       mlC.appendChild(card);
+      
+      // Inject previews after HTML insertion
+      setTimeout(() => renderImagePreviews(m.id), 0);
     });
 
     document.getElementById('macroCal').innerText = tCal; document.getElementById('macroProt').innerText = `${tP}g`; document.getElementById('macroCarb').innerText = `${tC}g`; document.getElementById('macroFat').innerText = `${tF}g`;
