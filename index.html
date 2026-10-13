@@ -523,8 +523,12 @@
     });
   }
 
-  async function parseCloudAiMacros(queryText, isUcsb, files) {
-    if (!userGoals.apiKey || userGoals.apiKey.trim().length === 0) { alert("Please paste Gemini API Key in Settings."); toggleSettingsModal(); return null; }
+async function parseCloudAiMacros(queryText, isUcsb, files) {
+    if (!userGoals.apiKey || userGoals.apiKey.trim().length === 0) { 
+      alert("Please paste Gemini API Key in Settings."); 
+      toggleSettingsModal(); 
+      return null; 
+    }
     
     const prompt = `Estimate total nutrition for this meal: "${queryText}". 
     ${isUcsb ? "CRITICAL: This is a meal from a UCSB dining hall (Carrillo, De La Guerra, Portola, Ortega). Please actively use your knowledge of UCSB dining menus, recipes, and standard university food services to provide the most accurate nutritional estimation possible based on what they serve." : ""}
@@ -542,8 +546,8 @@
       parts.push({ inlineData: { mimeType: file.type, data: base64Data } });
     }
 
-    // Using gemini-1.5-flash as the actual stable vision model
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(userGoals.apiKey.trim())}`, {
+    // Direct endpoint for Gemini 3.8 Flash
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(userGoals.apiKey.trim())}`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: parts }] })
     });
@@ -551,7 +555,7 @@
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error?.message || `HTTP ${res.status}`);
     const data = await res.json();
     const parsed = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
-    return parsed; // {cal, p, c, f, needs_more_photos, reason}
+    return parsed;
   }
 
   function parseLocalMacros(queryText) {
