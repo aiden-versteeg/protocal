@@ -3,16 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Daily Protocol & Nutrition Suite</title>
-  
+  <title>Protocol | Athletics & Engineering OS</title>
+
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Protocol" />
+  <meta name="apple-mobile-web-app-title" content="Protocol OS" />
   <meta name="theme-color" content="#090d16" />
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
@@ -22,165 +20,227 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    input, textarea, button { outline: none; }
+    input, textarea, select, button { outline: none; }
     .locked-overlay {
       pointer-events: none;
       opacity: 0.40;
       filter: grayscale(0.7);
     }
+    .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
   </style>
 </head>
-<body class="min-h-screen flex justify-center pb-24">
+<body class="min-h-screen flex justify-center pb-28">
 
 <div class="w-full max-w-xl px-4 pt-6">
 
-  <!-- TOP HEADER & CONTROLS -->
+  <!-- MASTER HEADER -->
   <header class="flex items-center justify-between mb-4">
     <div>
-      <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+      <h1 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        Daily Protocol
+        PROTOCOL OS
       </h1>
       <div id="protocolStartNotice" class="text-[11px] text-emerald-400 font-semibold tracking-wide mt-0.5"></div>
     </div>
-    
+
     <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 p-1 rounded-xl shadow-lg">
-      <button id="tabDailyBtn" onclick="switchTab('daily')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-        Today
+      <button onclick="toggleSettingsModal()" title="Macro Goals & API Key" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg">
+        <i data-lucide="sliders" class="w-4 h-4"></i>
       </button>
-      <button id="tabMonthlyBtn" onclick="switchTab('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200">
-        Monthly
-      </button>
-      <button onclick="toggleSettingsModal()" title="Macro Goals & AI Settings" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg">
-        <i data-lucide="settings" class="w-4 h-4"></i>
-      </button>
-      <button onclick="exportData()" title="Backup JSON" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg">
+      <button onclick="exportData()" title="Backup All Data (JSON)" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg">
         <i data-lucide="download" class="w-4 h-4"></i>
       </button>
-      <label title="Restore JSON" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg cursor-pointer">
+      <label title="Restore Data (JSON)" class="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg cursor-pointer">
         <i data-lucide="upload" class="w-4 h-4"></i>
         <input type="file" id="importInput" onchange="importData(event)" class="hidden" accept=".json" />
       </label>
     </div>
   </header>
 
-  <!-- DATE NAVIGATION -->
-  <div id="dateSelectorBar" class="flex items-center justify-between bg-slate-900/60 border border-slate-800/80 rounded-xl px-3 py-2 mb-3 backdrop-blur-sm">
-    <button onclick="shiftDate(-1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition">
-      <i data-lucide="chevron-left" class="w-5 h-5"></i>
+  <!-- 4-TAB NAVIGATION BAR -->
+  <nav class="grid grid-cols-4 gap-1 bg-slate-900/90 border border-slate-800 p-1 rounded-2xl mb-4 shadow-xl">
+    <button id="navBtn_today" onclick="switchMainTab('today')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+      <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+      <span>Today</span>
     </button>
-    <div class="text-center">
-      <span id="currentDateLabel" class="text-sm font-semibold text-slate-200"></span>
-      <span id="dayBadge" class="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700"></span>
+    <button id="navBtn_matrix" onclick="switchMainTab('matrix')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+      <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+      <span>Matrix</span>
+    </button>
+    <button id="navBtn_athletics" onclick="switchMainTab('athletics')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+      <i data-lucide="dumbbell" class="w-3.5 h-3.5"></i>
+      <span>Athletics</span>
+    </button>
+    <button id="navBtn_academics" onclick="switchMainTab('academics')" class="py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200">
+      <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+      <span>Academics</span>
+    </button>
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- TAB 1: TODAY (ACTIONS, MEALS, BOUNDARIES) -->
+  <!-- ========================================== -->
+  <section id="view_today" class="space-y-4">
+
+    <!-- DATE CONTROLS -->
+    <div class="flex items-center justify-between bg-slate-900/60 border border-slate-800/80 rounded-xl px-3 py-2 backdrop-blur-sm">
+      <button onclick="shiftDate(-1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+      </button>
+      <div class="text-center">
+        <span id="currentDateLabel" class="text-sm font-bold text-slate-200"></span>
+        <span id="dayBadge" class="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700"></span>
+      </div>
+      <button onclick="shiftDate(1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+      </button>
     </div>
-    <button onclick="shiftDate(1)" class="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition">
-      <i data-lucide="chevron-right" class="w-5 h-5"></i>
-    </button>
-  </div>
 
-  <!-- STATUS BANNERS -->
-  <div id="statusBanner" class="hidden mb-4 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold border"></div>
+    <!-- STATUS BANNER -->
+    <div id="statusBanner" class="hidden rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold border"></div>
 
-  <!-- DAILY VIEW -->
-  <div id="dailyView" class="space-y-5">
-
-    <!-- KPI STRIP -->
+    <!-- DAILY KPI ROW -->
     <div class="grid grid-cols-3 gap-2.5">
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Day Status</div>
-        <div id="kpiDayStatus" class="text-sm font-bold text-slate-400">Incomplete</div>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Protocol Day</div>
+        <div id="kpiDayStatus" class="text-xs font-extrabold text-slate-400">Incomplete</div>
       </div>
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Water Total</div>
-        <div id="kpiWaterTotal" class="text-sm font-bold text-cyan-400">0 ml</div>
+        <div id="kpiWaterTotal" class="text-xs font-extrabold text-cyan-400">0 ml</div>
       </div>
       <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-2xl">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Calories / Protein</div>
-        <div id="kpiMacroSummary" class="text-xs font-bold text-amber-400">0 kcal • 0g P</div>
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Calories & Prot</div>
+        <div id="kpiMacroSummary" class="text-[11px] font-extrabold text-amber-400">0 kcal • 0g P</div>
       </div>
     </div>
 
-    <!-- DAILY INTERACTION WRAPPER -->
-    <div id="interactiveContent" class="space-y-5">
+    <div id="interactiveTodayWrap" class="space-y-4">
 
-      <!-- DRONE SPRINT -->
-      <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-lg">🚁</div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hr • 5x/wk</span>
-              </div>
-              <p id="droneWeeklyStatus" class="text-xs text-slate-400 mt-0.5">This Week: 0 / 5 sessions logged</p>
-            </div>
+      <!-- MORNING WEIGH-IN STRIP -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between shadow-lg">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
+            <i data-lucide="scale" class="w-4 h-4"></i>
           </div>
-          <button id="droneTodayBtn" onclick="toggleDroneSprint()" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300">
-            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-            <span>Log 1 Hr</span>
-          </button>
+          <div>
+            <div class="text-xs font-bold text-slate-200">Morning Weigh-In</div>
+            <div class="text-[10px] text-slate-400">Fasted, post-restroom target</div>
+          </div>
         </div>
-        <div class="mt-3.5 flex items-center gap-1.5">
-          <div id="dronePip1" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-          <div id="dronePip2" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-          <div id="dronePip3" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-          <div id="dronePip4" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-          <div id="dronePip5" class="h-1.5 flex-1 rounded-full bg-slate-800"></div>
-        </div>
-        <div class="mt-3 pt-3 border-t border-slate-800/80">
-          <input type="text" id="droneNotes" placeholder="Session build notes (CAD, motor test, solder, Betaflight)..." oninput="saveDroneNotes(this.value)" class="w-full bg-slate-950/60 border border-slate-800/80 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-500" />
+        <div class="flex items-center gap-1.5">
+          <input 
+            type="number" 
+            step="0.1" 
+            id="todayWeightInput" 
+            placeholder="lbs" 
+            onchange="saveTodayWeight(this.value)"
+            class="w-20 bg-slate-950 border border-slate-800 rounded-xl px-2 py-1 text-xs font-extrabold text-violet-300 text-center"
+          />
+          <span class="text-xs text-slate-500 font-bold">lbs</span>
         </div>
       </div>
 
-      <!-- HYDRATION BOTTLES -->
+      <!-- HYDRATION BOTTLES (1.0L & 710ML) -->
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
               <i data-lucide="droplet" class="w-4 h-4"></i>
             </div>
             <div>
               <h2 class="text-sm font-bold text-white">Hydration Bottles</h2>
-              <div class="text-[11px] text-slate-400">Target: 4,000+ ml + Electrolytes</div>
+              <div class="text-[10px] text-slate-400">Goal: 4,000+ ml + Electrolytes</div>
             </div>
           </div>
-          <div id="waterStatusTag" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">0%</div>
+          <div id="waterStatusTag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">0%</div>
         </div>
-        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden mb-4">
+        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
           <div id="waterFillBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300" style="width: 0%"></div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="text-xs font-bold text-slate-200">1.0L Bottle</div>
-                <div class="text-[10px] text-slate-400">1,000 ml</div>
-              </div>
-              <div id="count1000" class="text-lg font-extrabold text-cyan-400">0x</div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-slate-200">1.0L (1000ml)</div>
+              <div id="count1000" class="text-base font-black text-cyan-400">0x</div>
             </div>
-            <div class="flex items-center gap-2 mt-3">
-              <button onclick="decrementBottle('b1000')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">-</button>
-              <button onclick="incrementBottle('b1000')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold">+ 1L Bottle</button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="decrementBottle('b1000')" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 text-xs font-bold">-</button>
+              <button onclick="incrementBottle('b1000')" class="px-2.5 h-7 bg-cyan-600/30 border border-cyan-500/40 rounded-lg text-cyan-300 text-xs font-bold">+1L</button>
             </div>
           </div>
-          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="text-xs font-bold text-slate-200">710ml Bottle</div>
-                <div class="text-[10px] text-slate-400">710 ml</div>
-              </div>
-              <div id="count710" class="text-lg font-extrabold text-cyan-400">0x</div>
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-slate-200">710ml Bottle</div>
+              <div id="count710" class="text-base font-black text-cyan-400">0x</div>
             </div>
-            <div class="flex items-center gap-2 mt-3">
-              <button onclick="decrementBottle('b710')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">-</button>
-              <button onclick="incrementBottle('b710')" class="flex-1 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-bold">+ 710ml Bottle</button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="decrementBottle('b710')" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 text-xs font-bold">-</button>
+              <button onclick="incrementBottle('b710')" class="px-2.5 h-7 bg-cyan-600/30 border border-cyan-500/40 rounded-lg text-cyan-300 text-xs font-bold">+710</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ZERO TOLERANCE BOUNDARIES -->
+      <!-- PRIMARY ACTIONS (TASKS HIGH UP) -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Daily Actions & Regimen</h2>
+              <div class="text-[10px] text-slate-400">100% required for Full Green</div>
+            </div>
+          </div>
+        </div>
+        <div id="actionsList" class="space-y-2"></div>
+      </div>
+
+      <!-- MEAL TRACKER & DUAL ESTIMATOR -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <i data-lucide="utensils" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Meal & Nutrition Tracker</h2>
+              <div class="text-[10px] text-slate-400">Dual estimator: Local Engine vs. Cloud AI</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Macro Strip -->
+        <div class="grid grid-cols-4 gap-2 bg-slate-950/60 border border-slate-800/80 p-2.5 rounded-xl mb-3 text-center">
+          <div>
+            <div class="text-[9px] text-slate-400 font-bold uppercase">Calories</div>
+            <div id="macroCal" class="text-xs font-black text-white">0</div>
+            <div id="macroGoalCal" class="text-[8px] text-slate-500">/ 2600</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-amber-400 font-bold uppercase">Protein</div>
+            <div id="macroProt" class="text-xs font-black text-amber-400">0g</div>
+            <div id="macroGoalProt" class="text-[8px] text-slate-500">/ 160g</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-cyan-400 font-bold uppercase">Carbs</div>
+            <div id="macroCarb" class="text-xs font-black text-cyan-400">0g</div>
+            <div id="macroGoalCarb" class="text-[8px] text-slate-500">/ 300g</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-rose-400 font-bold uppercase">Fats</div>
+            <div id="macroFat" class="text-xs font-black text-rose-400">0g</div>
+            <div id="macroGoalFat" class="text-[8px] text-slate-500">/ 70g</div>
+          </div>
+        </div>
+
+        <div id="mealsContainer" class="space-y-3"></div>
+      </div>
+
+      <!-- ZERO TOLERANCE BOUNDARIES (LOWER DOWN) -->
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
@@ -189,81 +249,25 @@
             </div>
             <div>
               <h2 class="text-sm font-bold text-white">Avoidance Boundaries</h2>
-              <div class="text-[11px] text-slate-400">All must remain Clean for a Green day</div>
+              <div class="text-[10px] text-slate-400">Zero tolerance • Tap "Fail" if breached</div>
             </div>
           </div>
         </div>
         <div id="boundariesList" class="space-y-2"></div>
       </div>
 
-      <!-- DAILY ACTION PROTOCOL -->
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h2 class="text-sm font-bold text-white">Daily Actions & Hypertrophy</h2>
-              <div class="text-[11px] text-slate-400">100% required to complete day</div>
-            </div>
-          </div>
-        </div>
-        <div id="actionsList" class="space-y-2"></div>
-      </div>
-
-      <!-- COMPREHENSIVE NUTRITION & MACROS -->
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h2 class="text-sm font-bold text-white">Meal & Macro Tracker</h2>
-              <div class="text-[11px] text-slate-400">Dual estimator: Local Code vs. Cloud AI API</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Macro Target Gauges -->
-        <div class="grid grid-cols-4 gap-2 bg-slate-950/60 border border-slate-800/80 p-3 rounded-xl mb-4 text-center">
-          <div>
-            <div class="text-[10px] text-slate-400 font-bold uppercase">Calories</div>
-            <div id="macroCal" class="text-xs font-black text-white mt-0.5">0</div>
-            <div id="macroGoalCal" class="text-[9px] text-slate-500">/ 2600</div>
-          </div>
-          <div>
-            <div class="text-[10px] text-amber-400 font-bold uppercase">Protein</div>
-            <div id="macroProt" class="text-xs font-black text-amber-400 mt-0.5">0g</div>
-            <div id="macroGoalProt" class="text-[9px] text-slate-500">/ 160g</div>
-          </div>
-          <div>
-            <div class="text-[10px] text-cyan-400 font-bold uppercase">Carbs</div>
-            <div id="macroCarb" class="text-xs font-black text-cyan-400 mt-0.5">0g</div>
-            <div id="macroGoalCarb" class="text-[9px] text-slate-500">/ 300g</div>
-          </div>
-          <div>
-            <div class="text-[10px] text-rose-400 font-bold uppercase">Fats</div>
-            <div id="macroFat" class="text-xs font-black text-rose-400 mt-0.5">0g</div>
-            <div id="macroGoalFat" class="text-[9px] text-slate-500">/ 70g</div>
-          </div>
-        </div>
-
-        <!-- Meal Log Cards -->
-        <div id="mealsContainer" class="space-y-3"></div>
-      </div>
-
     </div>
-  </div>
+  </section>
 
-  <!-- MONTHLY CALENDAR VIEW -->
-  <div id="monthlyView" class="hidden space-y-5">
+  <!-- ========================================== -->
+  <!-- TAB 2: MATRIX (CALENDAR & AUDIT)           -->
+  <!-- ========================================== -->
+  <section id="view_matrix" class="hidden space-y-4">
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="text-base font-bold text-white" id="monthCalendarTitle">Month</h2>
-          <div class="text-xs text-slate-400">Strict Green = 100% boundary & action completion</div>
+          <div class="text-xs text-slate-400">Strict Green = 100% Boundary & Action Completion</div>
         </div>
         <div class="flex items-center gap-2 text-[10px] font-bold">
           <span class="flex items-center gap-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Complete</span>
@@ -278,32 +282,257 @@
       <div id="monthGrid" class="grid grid-cols-7 gap-1.5 text-center"></div>
     </div>
 
-    <!-- Monthly Metric Tiles -->
+    <!-- Monthly KPIs -->
     <div class="grid grid-cols-3 gap-2.5">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fully Green Days</div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Green</div>
         <div id="monthlyFullGreen" class="text-lg font-black text-emerald-400">0</div>
       </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Drone Hours</div>
         <div id="monthlyDroneCount" class="text-lg font-black text-indigo-400">0 hrs</div>
       </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3">
-        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Clean Adherence</div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
+        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Adherence</div>
         <div id="monthlyAdherence" class="text-lg font-black text-cyan-400">100%</div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- TAB 3: ATHLETICS (LIFTOFF ENGINE)          -->
+  <!-- ========================================== -->
+  <section id="view_athletics" class="hidden space-y-4">
+
+    <!-- WEIGHT PROGRESSION SUB-CARD -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-white">Bodyweight Analytics</h2>
+            <div class="text-[10px] text-slate-400">Fasted trend curve (Hypertrophy bulk)</div>
+          </div>
+        </div>
+        <div id="weightSummaryBadge" class="text-xs font-extrabold text-violet-300">-- lbs</div>
+      </div>
+
+      <!-- SVG Chart -->
+      <div class="w-full h-32 bg-slate-950/60 border border-slate-800/80 rounded-xl p-2 relative flex items-center justify-center">
+        <svg id="weightSvgChart" class="w-full h-full overflow-visible"></svg>
+        <div id="noWeightMsg" class="absolute text-xs text-slate-600 font-semibold">Log weigh-ins to plot curve</div>
+      </div>
+    </div>
+
+    <!-- CARDIO & INJURY REHAB PROTOCOL -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-white">Cardio & Injury Prehab Engine</h2>
+          <div class="text-[10px] text-slate-400">Weekly requirements & recovery compliance</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <!-- Groin PT 3x/wk -->
+        <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-slate-200">Groin PT</span>
+            <span id="ptWeekTag" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0/3 wk</span>
+          </div>
+          <div class="text-[10px] text-slate-500 mb-2">Adductor isometrics, copenhagen planks</div>
+          <button id="btnTogglePtToday" onclick="togglePtToday()" class="w-full py-1 rounded-lg text-xs font-bold border transition bg-slate-800 text-slate-300 border-slate-700">
+            Log Today's PT
+          </button>
+        </div>
+
+        <!-- Mobility Prehab 4x/wk -->
+        <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-slate-200">Joint Prehab</span>
+            <span id="prehabWeekTag" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">0/4 wk</span>
+          </div>
+          <div class="text-[10px] text-slate-500 mb-2">90/90 hips, t-spine, rotator cuffs</div>
+          <button id="btnTogglePrehabToday" onclick="togglePrehabToday()" class="w-full py-1 rounded-lg text-xs font-bold border transition bg-slate-800 text-slate-300 border-slate-700">
+            Log Prehab
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIFTOFF WORKOUT ENGINE (PPLPP PRESETS + EXERCISE LIBRARY) -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3.5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+            <i data-lucide="flame" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-white">LIFTOFF Workout Logger</h2>
+            <div class="text-[10px] text-slate-400">Mon–Fri PPLPP split • Weight & rep overload</div>
+          </div>
+        </div>
+
+        <!-- Rest / Workout Timer -->
+        <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-800 px-2 py-1 rounded-xl">
+          <i data-lucide="timer" class="w-3.5 h-3.5 text-orange-400"></i>
+          <span id="restTimerDisplay" class="text-xs font-mono font-black text-orange-300">00:00</span>
+          <button onclick="toggleRestTimer()" id="restTimerBtn" class="text-[10px] font-bold text-slate-400 hover:text-white ml-1">Start</button>
+        </div>
+      </div>
+
+      <!-- Presets Quick Loader -->
+      <div class="bg-slate-950/60 border border-slate-800/80 p-2.5 rounded-xl space-y-2">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+          <span>Weekly PPLPP Split Preset:</span>
+          <span id="suggestedSplitBadge" class="text-[10px] text-orange-400"></span>
+        </div>
+        <div class="grid grid-cols-5 gap-1.5 text-center">
+          <button onclick="loadPplPreset('push1')" class="py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Mon: Push</button>
+          <button onclick="loadPplPreset('pull1')" class="py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Tue: Pull</button>
+          <button onclick="loadPplPreset('legs')" class="py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Wed: Legs</button>
+          <button onclick="loadPplPreset('push2')" class="py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Thu: Push</button>
+          <button onclick="loadPplPreset('pull2')" class="py-1.5 rounded-lg text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Fri: Pull</button>
+        </div>
+      </div>
+
+      <!-- Active Workout Session Header -->
+      <div class="flex items-center justify-between pt-1">
+        <div>
+          <span class="text-xs font-extrabold text-white" id="currentSessionTitle">Workout Session</span>
+          <span id="workoutStatusTag" class="ml-2 text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">Not Completed</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="openExerciseModal()" class="px-2.5 py-1 bg-orange-600/30 hover:bg-orange-600/40 border border-orange-500/40 text-orange-300 rounded-lg text-[11px] font-bold flex items-center gap-1">
+            <i data-lucide="plus" class="w-3 h-3"></i> Add Movement
+          </button>
+          <button onclick="toggleWorkoutComplete()" id="btnFinishWorkout" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-[11px] font-bold">
+            Check Off Day
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Exercise List Container -->
+      <div id="workoutExercisesList" class="space-y-3"></div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- TAB 4: ACADEMICS & ENGINEERING BRAINSTORM -->
+  <!-- ========================================== -->
+  <section id="view_academics" class="hidden space-y-4">
+
+    <!-- DRONE SPRINT CARD (CONNECTED TO ACADEMICS) -->
+    <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border border-indigo-500/30 rounded-2xl p-4 shadow-xl">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-lg">🚁</div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-bold text-indigo-200">Drone Build Sprint</h2>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">1 Hr • 5x/wk</span>
+            </div>
+            <p id="droneWeeklyStatusTab4" class="text-xs text-slate-400 mt-0.5">This Week: 0 / 5 sessions logged</p>
+          </div>
+        </div>
+        <button onclick="toggleDroneSprint()" id="droneTab4Btn" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300">
+          <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+          <span>Log 1 Hr</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- COURSEWORK & STUDY PROGRESS -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <i data-lucide="book-open" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-white">Coursework & Deep Study Log</h2>
+            <div class="text-[10px] text-slate-400">Minimum 1 hour focused daily session</div>
+          </div>
+        </div>
+        <button onclick="addCourseNote()" class="px-2 py-1 bg-blue-600/30 border border-blue-500/30 text-blue-300 rounded-lg text-xs font-bold flex items-center gap-1">
+          <i data-lucide="plus" class="w-3 h-3"></i> Add Note
+        </button>
+      </div>
+
+      <div id="courseNotesList" class="space-y-2"></div>
+    </div>
+
+    <!-- ENGINEERING BRAINSTORM & PROJECT SCRATCHPAD -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold text-white">Hardware & Flight Brainstorm Board</h2>
+            <div class="text-[10px] text-slate-400">CAD concepts, firmware tuning, motor tests, notes</div>
+          </div>
+        </div>
+        <button onclick="addBrainstormCard()" class="px-2 py-1 bg-purple-600/30 border border-purple-500/30 text-purple-300 rounded-lg text-xs font-bold flex items-center gap-1">
+          <i data-lucide="plus" class="w-3 h-3"></i> New Idea
+        </button>
+      </div>
+
+      <div id="brainstormCardsList" class="space-y-2.5"></div>
+    </div>
+
+  </section>
 
 </div>
 
-<!-- MACRO & AI SETTINGS MODAL -->
+<!-- EXERCISE SELECTION MODAL (LIFTOFF LIBRARY) -->
+<div id="exerciseModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-4 space-y-3 flex flex-col max-h-[85vh]">
+    <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i data-lucide="dumbbell" class="w-4 h-4 text-orange-400"></i>
+        Exercise Library
+      </h3>
+      <button onclick="closeExerciseModal()" class="text-slate-400 hover:text-white">✕</button>
+    </div>
+
+    <input 
+      type="text" 
+      id="exerciseSearchInput" 
+      placeholder="Search lifts (e.g. Bench, Squat, Lat, Incline)..." 
+      oninput="filterExerciseLibrary(this.value)"
+      class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500"
+    />
+
+    <!-- Category filter chips -->
+    <div class="flex gap-1 overflow-x-auto pb-1 text-[10px] custom-scroll">
+      <button onclick="setExerciseCategory('all')" class="px-2 py-1 rounded-lg bg-slate-800 text-slate-200 shrink-0 font-bold">All</button>
+      <button onclick="setExerciseCategory('Chest')" class="px-2 py-1 rounded-lg bg-slate-800 text-slate-400 shrink-0 font-bold">Chest</button>
+      <button onclick="setExerciseCategory('Back')" class="px-2 py-1 rounded-lg bg-slate-800 text-slate-400 shrink-0 font-bold">Back</button>
+      <button onclick="setExerciseCategory('Shoulders')" class="px-2 py-1 rounded-lg bg-slate-800 text-slate-400 shrink-0 font-bold">Shoulders</button>
+      <button onclick="setExerciseCategory('Legs')" class="px-2 py-1 rounded-lg bg-slate-800 text-slate-400 shrink-0 font-bold">Legs</button>
+      <button onclick="setExerciseCategory('Arms')" class="px-2 py-1 rounded-lg bg-slate-800 text-slate-400 shrink-0 font-bold">Arms</button>
+    </div>
+
+    <!-- Scrollable Exercise List -->
+    <div id="exerciseLibraryList" class="flex-1 overflow-y-auto space-y-1.5 custom-scroll pr-1"></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
 <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
         <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
-        Daily Macro Goals & API Key
+        System Goals & API Key
       </h3>
       <button onclick="toggleSettingsModal()" class="text-slate-400 hover:text-white">✕</button>
     </div>
@@ -332,8 +561,7 @@
         <label class="block text-purple-400 font-bold mb-1 flex items-center gap-1.5">
           <i data-lucide="key" class="w-3.5 h-3.5"></i> Gemini API Key
         </label>
-        <input type="password" id="settingApiKey" placeholder="Paste your Gemini API Key here" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white text-[11px]" />
-        <p class="text-[10px] text-slate-500 mt-1">Required only when clicking the "✨ AI Cloud API" button.</p>
+        <input type="password" id="settingApiKey" placeholder="Paste Gemini API Key for Cloud AI meal parser" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white text-[11px]" />
       </div>
     </div>
 
@@ -344,7 +572,84 @@
 </div>
 
 <script>
-  // START DATE CONFIGURATION: OFFICIALLY STARTS TOMORROW
+  // ==========================================
+  // MASTER EXERCISE REPOSITORY (LIFTOFF ENGINE)
+  // ==========================================
+  const EXERCISE_DATABASE = [
+    // Chest
+    { id: "barbell_bench", name: "Barbell Bench Press", category: "Chest" },
+    { id: "incline_db_bench", name: "Incline Dumbbell Press", category: "Chest" },
+    { id: "incline_barbell_bench", name: "Incline Barbell Bench Press", category: "Chest" },
+    { id: "flat_db_bench", name: "Flat Dumbbell Press", category: "Chest" },
+    { id: "chest_dips", name: "Chest Dips (Weighted/Bodyweight)", category: "Chest" },
+    { id: "cable_crossover", name: "Cable Chest Flyes", category: "Chest" },
+    { id: "pec_deck", name: "Pec Deck Machine Flyes", category: "Chest" },
+
+    // Back
+    { id: "barbell_deadlift", name: "Conventional Deadlift", category: "Back" },
+    { id: "barbell_row", name: "Barbell Bent-Over Row", category: "Back" },
+    { id: "pullups", name: "Pull-Ups (Weighted/Bodyweight)", category: "Back" },
+    { id: "lat_pulldown", name: "Lat Pulldown (Wide/Close Grip)", category: "Back" },
+    { id: "seated_cable_row", name: "Seated Cable Row", category: "Back" },
+    { id: "chest_supported_row", name: "Chest Supported T-Bar Row", category: "Back" },
+    { id: "single_arm_db_row", name: "Single-Arm Dumbbell Row", category: "Back" },
+    { id: "lat_prayer", name: "Straight Arm Lat Pulldown", category: "Back" },
+
+    // Shoulders
+    { id: "overhead_press", name: "Overhead Barbell Press (OHP)", category: "Shoulders" },
+    { id: "db_shoulder_press", name: "Seated Dumbbell Shoulder Press", category: "Shoulders" },
+    { id: "lateral_raises_db", name: "Dumbbell Lateral Raises", category: "Shoulders" },
+    { id: "cable_lateral_raise", name: "Cable Lateral Raises", category: "Shoulders" },
+    { id: "rear_delt_flye", name: "Rear Delt Reverse Pec Deck", category: "Shoulders" },
+    { id: "face_pulls", name: "Cable Face Pulls", category: "Shoulders" },
+
+    // Legs
+    { id: "barbell_squat", name: "Barbell Back Squat", category: "Legs" },
+    { id: "front_squat", name: "Barbell Front Squat", category: "Legs" },
+    { id: "romanian_deadlift", name: "Romanian Deadlift (RDL)", category: "Legs" },
+    { id: "leg_press", name: "45-Degree Leg Press", category: "Legs" },
+    { id: "bulgarian_split_squat", name: "Bulgarian Split Squats", category: "Legs" },
+    { id: "leg_extensions", name: "Leg Extensions", category: "Legs" },
+    { id: "hamstring_curls", name: "Seated / Lying Leg Curls", category: "Legs" },
+    { id: "standing_calf_raise", name: "Standing Calf Raises", category: "Legs" },
+
+    // Arms
+    { id: "barbell_curl", name: "Barbell Bicep Curl", category: "Arms" },
+    { id: "incline_db_curl", name: "Incline Dumbbell Curl", category: "Arms" },
+    { id: "hammer_curls", name: "Dumbbell Hammer Curls", category: "Arms" },
+    { id: "preacher_curl", name: "Preacher Curl", category: "Arms" },
+    { id: "skull_crushers", name: "EZ-Bar Skull Crushers", category: "Arms" },
+    { id: "tricep_rope_pushdown", name: "Cable Tricep Rope Pushdown", category: "Arms" },
+    { id: "overhead_tricep_ext", name: "Overhead Cable Tricep Extension", category: "Arms" }
+  ];
+
+  // PPLPP SPLIT TEMPLATES
+  const PPL_PRESETS = {
+    push1: {
+      title: "Push A (Chest / Front Delt / Triceps)",
+      exercises: ["barbell_bench", "overhead_press", "incline_db_bench", "cable_lateral_raise", "tricep_rope_pushdown"]
+    },
+    pull1: {
+      title: "Pull A (Lat Focus / Upper Back / Biceps)",
+      exercises: ["pullups", "barbell_row", "chest_supported_row", "face_pulls", "incline_db_curl", "hammer_curls"]
+    },
+    legs: {
+      title: "Legs (Quads / Hamstrings / Calves)",
+      exercises: ["barbell_squat", "romanian_deadlift", "bulgarian_split_squat", "leg_extensions", "hamstring_curls", "standing_calf_raise"]
+    },
+    push2: {
+      title: "Push B (Incline Focus / Lateral Delts / Arms)",
+      exercises: ["incline_barbell_bench", "flat_db_bench", "db_shoulder_press", "lateral_raises_db", "overhead_tricep_ext", "chest_dips"]
+    },
+    pull2: {
+      title: "Pull B (Deadlift / Row / Rear Delt)",
+      exercises: ["barbell_deadlift", "lat_pulldown", "single_arm_db_row", "rear_delt_flye", "barbell_curl", "preacher_curl"]
+    }
+  };
+
+  // ==========================================
+  // CONFIGURATION & DIRECTIVES
+  // ==========================================
   const todayObj = new Date();
   const tomorrowObj = new Date(todayObj);
   tomorrowObj.setDate(tomorrowObj.getDate() + 1);
@@ -353,24 +658,28 @@
   localStorage.setItem('protocol_start_date', START_DATE_KEY);
 
   const BOUNDARIES = [
+    { id: "b_morning_phone", label: "Zero Phone First 60 Min", desc: "No notifications or screen dopamine upon waking" },
     { id: "b_sugar", label: "No Sugar", desc: "Zero added sugar or sweets" },
-    { id: "b_porn", label: "No Porn", desc: "Absolute boundary" },
-    { id: "b_processed", label: "No Processed Food Outside Dining Halls", desc: "Dining halls only for essentials" },
+    { id: "b_porn", label: "No Porn", desc: "Absolute zero-tolerance boundary" },
+    { id: "b_processed", label: "No Processed Outside Dining Hall", desc: "Whole clean fuel only" },
     { id: "b_alcohol", label: "No Alcohol", desc: "Zero alcohol consumption" },
     { id: "b_scrolling", label: "No Scrolling of Any Form", desc: "Zero feed browsing (IG, TikTok, X, Reels)" },
-    { id: "b_youtube", label: "No YouTube", desc: "Zero distraction videos" },
-    { id: "b_fakeprod", label: "No Fake Productivity", desc: "Real high-value coursework/building only" },
-    { id: "b_stupid_ai", label: "No Stupid AI Questions", desc: "Think deeply before prompt crutches" },
-    { id: "b_touch_face", label: "Keep Hands Off Face", desc: "Skin protection; avoid pore contamination" }
+    { id: "b_youtube", label: "No YouTube", desc: "Zero distraction rabbit holes" },
+    { id: "b_fakeprod", label: "No Fake Productivity", desc: "Real deep engineering/coursework only" },
+    { id: "b_stupid_ai", label: "No Stupid AI Questions", desc: "Think deeply through problems first" },
+    { id: "b_touch_face", label: "Keep Hands Off Face", desc: "Protect skin pores from oil transfer" }
   ];
 
   const ACTIONS = [
+    { id: "a_lift", label: "Lift Mornings (PPLPP Mon–Fri)", desc: "Logged via Athletics tab", isWorkoutLinked: true },
     { id: "a_cardio", label: "Light Cardio Everyday", desc: "Zone 2 walk, run, swim, or cycle" },
-    { id: "a_lift", label: "Lift Mornings (Mon–Fri)", desc: "Enforce progressive overload", weekdayOnly: true },
-    { id: "a_sleep", label: "Wake 9:30 AM / Sleep 12:00–12:30 AM", desc: "Circadian consistency (Weekdays)", weekdayOnly: true },
-    { id: "a_study", label: "Study At Least 1 Hour", desc: "Focused deep coursework session" },
+    { id: "a_pt", label: "Groin Injury PT (3x/wk)", desc: "Adductor rehab logged in Athletics", isPtLinked: true },
+    { id: "a_prehab", label: "Joint & Hip Prehab (4x/wk)", desc: "Mobility logged in Athletics", isPrehabLinked: true },
+    { id: "a_creatine", label: "5g Creatine Monohydrate", desc: "Intramuscular saturation & power" },
+    { id: "a_sleep", label: "Wake 9:30 AM / Sleep 12–12:30 AM", desc: "Circadian consistency (Weekdays)", weekdayOnly: true },
     { id: "a_drone", label: "Drone Project (1 Hr Sprint)", desc: "Mandatory 5x per week", isDroneLinked: true },
-    { id: "a_water", label: "4+ Liters Water + Electrolytes", desc: "Tracked automatically via bottles", isWaterLinked: true },
+    { id: "a_study", label: "Study At Least 1 Hour", desc: "Coursework session in Academics tab" },
+    { id: "a_water", label: "4+ Liters Water + Electrolytes", desc: "Tracked via bottles", isWaterLinked: true },
     { id: "a_protein", label: "Hit Protein Target (160g+)", desc: "Calculated from meal logs", isProteinLinked: true },
     { id: "a_shower", label: "Shower Post-Workout", desc: "Wash away sweat to prevent breakouts" }
   ];
@@ -382,16 +691,21 @@
     { id: "m_snacks", label: "Post-Workout / Snacks" }
   ];
 
+  // APPLICATION STATE
   let currentDate = new Date();
-  let currentTab = 'daily';
-  let appData = JSON.parse(localStorage.getItem('protocol_master_data') || '{}');
-  let userGoals = JSON.parse(localStorage.getItem('protocol_macro_goals') || JSON.stringify({
+  let currentMainTab = 'today';
+  let appData = JSON.parse(localStorage.getItem('protocol_os_master') || '{}');
+  let userGoals = JSON.parse(localStorage.getItem('protocol_os_goals') || JSON.stringify({
     calories: 2600,
     protein: 160,
     carbs: 300,
     fat: 70,
     apiKey: ""
   }));
+
+  // Rest Timer State
+  let restTimerSeconds = 0;
+  let restTimerInterval = null;
 
   function getDayKey(date) {
     return date.toISOString().slice(0, 10);
@@ -415,12 +729,24 @@
         boundaries: {},
         actions: {},
         water: { b1000: 0, b710: 0 },
+        weight: null,
+        pt: false,
+        prehab: false,
         drone: { done: false, notes: '' },
         meals: {
           m_breakfast: { text: '', cal: 0, p: 0, c: 0, f: 0 },
           m_lunch: { text: '', cal: 0, p: 0, c: 0, f: 0 },
           m_dinner: { text: '', cal: 0, p: 0, c: 0, f: 0 },
           m_snacks: { text: '', cal: 0, p: 0, c: 0, f: 0 }
+        },
+        workout: {
+          title: "Custom Session",
+          completed: false,
+          exercises: []
+        },
+        academics: {
+          courseNotes: [],
+          brainstorms: []
         }
       };
     }
@@ -428,7 +754,7 @@
   }
 
   function persist() {
-    localStorage.setItem('protocol_master_data', JSON.stringify(appData));
+    localStorage.setItem('protocol_os_master', JSON.stringify(appData));
     render();
   }
 
@@ -437,24 +763,23 @@
     render();
   }
 
-  function switchTab(tab) {
-    currentTab = tab;
-    document.getElementById('dailyView').classList.toggle('hidden', tab !== 'daily');
-    document.getElementById('monthlyView').classList.toggle('hidden', tab !== 'monthly');
-    document.getElementById('dateSelectorBar').classList.toggle('hidden', tab !== 'daily');
-
-    document.getElementById('tabDailyBtn').className = tab === 'daily' 
-      ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-      : 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200';
-
-    document.getElementById('tabMonthlyBtn').className = tab === 'monthly'
-      ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-      : 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200';
-
+  function switchMainTab(tab) {
+    currentMainTab = tab;
+    ['today', 'matrix', 'athletics', 'academics'].forEach(t => {
+      document.getElementById(`view_${t}`).classList.toggle('hidden', t !== tab);
+      const btn = document.getElementById(`navBtn_${t}`);
+      if (t === tab) {
+        btn.className = "py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+      } else {
+        btn.className = "py-2 rounded-xl text-xs font-bold transition flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200";
+      }
+    });
     render();
   }
 
-  // WATER
+  // ==========================================
+  // WATER & HABITS AUTOMATIONS
+  // ==========================================
   function incrementBottle(type) {
     if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
     const rec = getDayRecord(getDayKey(currentDate));
@@ -477,7 +802,14 @@
     return ((water.b1000 || 0) * 1000) + ((water.b710 || 0) * 710);
   }
 
-  // DRONE 5X / WEEK
+  function saveTodayWeight(val) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.weight = val ? parseFloat(val) : null;
+    persist();
+  }
+
+  // WEEKLY ROLLING CHECKS
   function getWeekDateKeys(d) {
     const current = new Date(d);
     const day = current.getDay();
@@ -492,9 +824,32 @@
     return keys;
   }
 
-  function getWeeklyDroneCount(date) {
-    const weekKeys = getWeekDateKeys(date);
-    return weekKeys.reduce((acc, k) => acc + (appData[k]?.drone?.done ? 1 : 0), 0);
+  function getWeeklyStat(metricKey, date) {
+    const keys = getWeekDateKeys(date);
+    return keys.reduce((acc, k) => {
+      const rec = appData[k];
+      if (!rec) return acc;
+      if (metricKey === 'drone') return acc + (rec.drone?.done ? 1 : 0);
+      if (metricKey === 'pt') return acc + (rec.pt ? 1 : 0);
+      if (metricKey === 'prehab') return acc + (rec.prehab ? 1 : 0);
+      return acc;
+    }, 0);
+  }
+
+  function togglePtToday() {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.pt = !rec.pt;
+    syncAutomations(rec);
+    persist();
+  }
+
+  function togglePrehabToday() {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.prehab = !rec.prehab;
+    syncAutomations(rec);
+    persist();
   }
 
   function toggleDroneSprint() {
@@ -505,18 +860,260 @@
     persist();
   }
 
-  function saveDroneNotes(val) {
+  function setBoundary(bId, val) {
     if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
     const rec = getDayRecord(getDayKey(currentDate));
-    rec.drone.notes = val;
-    localStorage.setItem('protocol_master_data', JSON.stringify(appData));
+    rec.boundaries[bId] = val;
+    persist();
   }
 
-  // METHOD 1: INTERNAL LOCAL PARSER (OFFLINE REGEX / HEURISTICS)
+  function syncAutomations(rec) {
+    // Water auto-check
+    const vol = getWaterVolume(rec.water);
+    rec.actions['a_water'] = vol >= 4000;
+
+    // Drone
+    rec.actions['a_drone'] = !!rec.drone.done;
+
+    // PT & Prehab
+    rec.actions['a_pt'] = !!rec.pt;
+    rec.actions['a_prehab'] = !!rec.prehab;
+
+    // Lifting linked to workout session completion
+    rec.actions['a_lift'] = !!rec.workout?.completed;
+
+    // Protein target check
+    const totalP = Object.values(rec.meals).reduce((s, m) => s + (Number(m.p) || 0), 0);
+    rec.actions['a_protein'] = totalP >= (userGoals.protein || 160);
+  }
+
+  // STRICT FULL GREEN EVALUATOR
+  function evaluateDayStatus(rec, date) {
+    if (isDateBeforeStart(date)) return "unactivated";
+    if (isDateInFuture(date)) return "locked";
+
+    // 1. Boundary breach check
+    const hasBreach = Object.values(rec.boundaries || {}).some(v => v === true);
+    if (hasBreach) return "breached";
+
+    // 2. Action checklist completion
+    const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
+    let allDone = true;
+
+    ACTIONS.forEach(a => {
+      if (a.weekdayOnly && isWeekend) return;
+      if (!rec.actions[a.id]) {
+        allDone = false;
+      }
+    });
+
+    return allDone ? "complete" : "pending";
+  }
+
+  // ==========================================
+  // ATHLETICS: LIFTOFF WORKOUT ENGINE
+  // ==========================================
+  function loadPplPreset(presetKey) {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    const preset = PPL_PRESETS[presetKey];
+    if (!preset) return;
+
+    rec.workout.title = preset.title;
+    rec.workout.exercises = preset.exercises.map(exId => {
+      const meta = EXERCISE_DATABASE.find(e => e.id === exId) || { name: exId, category: "Other" };
+      return {
+        id: exId,
+        name: meta.name,
+        category: meta.category,
+        sets: [
+          { weight: 0, reps: 0, done: false },
+          { weight: 0, reps: 0, done: false },
+          { weight: 0, reps: 0, done: false }
+        ]
+      };
+    });
+
+    persist();
+  }
+
+  function toggleWorkoutComplete() {
+    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.workout.completed = !rec.workout.completed;
+    syncAutomations(rec);
+    persist();
+  }
+
+  function addSet(exerciseIndex) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    const ex = rec.workout.exercises[exerciseIndex];
+    if (ex) {
+      const lastSet = ex.sets[ex.sets.length - 1] || { weight: 0, reps: 0 };
+      ex.sets.push({ weight: lastSet.weight, reps: lastSet.reps, done: false });
+      persist();
+    }
+  }
+
+  function removeSet(exerciseIndex, setIndex) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    const ex = rec.workout.exercises[exerciseIndex];
+    if (ex && ex.sets.length > 1) {
+      ex.sets.splice(setIndex, 1);
+      persist();
+    }
+  }
+
+  function updateSetVal(exerciseIndex, setIndex, field, val) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    const ex = rec.workout.exercises[exerciseIndex];
+    if (ex && ex.sets[setIndex]) {
+      ex.sets[setIndex][field] = field === 'done' ? val : (parseFloat(val) || 0);
+      persist();
+    }
+  }
+
+  function removeExercise(exerciseIndex) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.workout.exercises.splice(exerciseIndex, 1);
+    persist();
+  }
+
+  // EXERCISE MODAL LOGIC
+  let currentCategoryFilter = 'all';
+
+  function openExerciseModal() {
+    document.getElementById('exerciseModal').classList.remove('hidden');
+    filterExerciseLibrary('');
+  }
+
+  function closeExerciseModal() {
+    document.getElementById('exerciseModal').classList.add('hidden');
+  }
+
+  function setExerciseCategory(cat) {
+    currentCategoryFilter = cat;
+    filterExerciseLibrary(document.getElementById('exerciseSearchInput').value);
+  }
+
+  function filterExerciseLibrary(query) {
+    const container = document.getElementById('exerciseLibraryList');
+    container.innerHTML = '';
+    const q = query.toLowerCase().trim();
+
+    const filtered = EXERCISE_DATABASE.filter(ex => {
+      const matchCat = currentCategoryFilter === 'all' || ex.category === currentCategoryFilter;
+      const matchQ = ex.name.toLowerCase().includes(q) || ex.category.toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+
+    filtered.forEach(ex => {
+      const btn = document.createElement('button');
+      btn.className = "w-full text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500/50 flex items-center justify-between transition";
+      btn.innerHTML = `
+        <div>
+          <div class="text-xs font-bold text-slate-200">${ex.name}</div>
+          <div class="text-[9px] text-slate-500">${ex.category}</div>
+        </div>
+        <span class="text-orange-400 text-xs font-black">+ Add</span>
+      `;
+      btn.onclick = () => {
+        addExerciseToCurrentWorkout(ex);
+        closeExerciseModal();
+      };
+      container.appendChild(btn);
+    });
+  }
+
+  function addExerciseToCurrentWorkout(exMeta) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.workout.exercises.push({
+      id: exMeta.id,
+      name: exMeta.name,
+      category: exMeta.category,
+      sets: [
+        { weight: 0, reps: 0, done: false },
+        { weight: 0, reps: 0, done: false },
+        { weight: 0, reps: 0, done: false }
+      ]
+    });
+    persist();
+  }
+
+  // REST TIMER
+  function toggleRestTimer() {
+    const btn = document.getElementById('restTimerBtn');
+    if (restTimerInterval) {
+      clearInterval(restTimerInterval);
+      restTimerInterval = null;
+      btn.innerText = "Start";
+    } else {
+      restTimerSeconds = 0;
+      btn.innerText = "Stop";
+      restTimerInterval = setInterval(() => {
+        restTimerSeconds++;
+        const mins = Math.floor(restTimerSeconds / 60).toString().padStart(2, '0');
+        const secs = (restTimerSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('restTimerDisplay').innerText = `${mins}:${secs}`;
+      }, 1000);
+    }
+  }
+
+  // ==========================================
+  // ACADEMICS & BRAINSTORMING SCRATCHPAD
+  // ==========================================
+  function addCourseNote() {
+    const rec = getDayRecord(getDayKey(currentDate));
+    const title = prompt("Enter Course / Study Focus (e.g. ECE Circuits, Physics, Algorithms):");
+    if (title) {
+      rec.academics.courseNotes.push({ id: Date.now(), title, text: "" });
+      persist();
+    }
+  }
+
+  function updateCourseNoteText(idx, val) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    if (rec.academics.courseNotes[idx]) {
+      rec.academics.courseNotes[idx].text = val;
+      localStorage.setItem('protocol_os_master', JSON.stringify(appData));
+    }
+  }
+
+  function deleteCourseNote(idx) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.academics.courseNotes.splice(idx, 1);
+    persist();
+  }
+
+  function addBrainstormCard() {
+    const rec = getDayRecord(getDayKey(currentDate));
+    const title = prompt("New Idea / Subsystem Title (e.g. Drone ESC telemetry, Carbon chassis CAD, Betaflight PID):");
+    if (title) {
+      rec.academics.brainstorms.push({ id: Date.now(), title, body: "" });
+      persist();
+    }
+  }
+
+  function updateBrainstormBody(idx, val) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    if (rec.academics.brainstorms[idx]) {
+      rec.academics.brainstorms[idx].body = val;
+      localStorage.setItem('protocol_os_master', JSON.stringify(appData));
+    }
+  }
+
+  function deleteBrainstormCard(idx) {
+    const rec = getDayRecord(getDayKey(currentDate));
+    rec.academics.brainstorms.splice(idx, 1);
+    persist();
+  }
+
+  // ==========================================
+  // MEALS & DUAL AI MACRO ESTIMATOR
+  // ==========================================
   function parseLocalMacros(queryText) {
     const text = queryText.toLowerCase().trim();
     if (!text) return { cal: 0, p: 0, c: 0, f: 0 };
-
     let cal = 0, p = 0, c = 0, f = 0;
 
     const ozMatch = text.match(/(\d+(\.\d+)?)\s*oz\s*(chicken|breast|steak|beef|salmon|turkey|tuna|fish)/);
@@ -563,11 +1160,9 @@
     if (cal === 0 && p === 0) {
       cal = 400; p = 25; c = 45; f = 14;
     }
-
     return { cal, p, c, f };
   }
 
-  // METHOD 2: CLOUD AI API (GEMINI CALL)
   async function parseCloudAiMacros(queryText) {
     if (!userGoals.apiKey || userGoals.apiKey.trim().length === 0) {
       alert("Please open Settings (gear icon) and paste your Gemini API Key first.");
@@ -576,7 +1171,6 @@
     }
 
     const prompt = `Estimate total nutrition for this meal: "${queryText}". Output strictly valid JSON without formatting, markdown, or code fences: {"cal": number, "p": number, "c": number, "f": number}`;
-    
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(userGoals.apiKey.trim())}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -601,7 +1195,6 @@
     };
   }
 
-  // HANDLER: TRIGGER LOCAL
   function triggerLocalEst(mealId) {
     if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
     const rec = getDayRecord(getDayKey(currentDate));
@@ -609,16 +1202,11 @@
     if (!meal.text) return;
 
     const est = parseLocalMacros(meal.text);
-    meal.cal = est.cal;
-    meal.p = est.p;
-    meal.c = est.c;
-    meal.f = est.f;
-
+    meal.cal = est.cal; meal.p = est.p; meal.c = est.c; meal.f = est.f;
     syncAutomations(rec);
     persist();
   }
 
-  // HANDLER: TRIGGER CLOUD API
   async function triggerCloudAiEst(mealId) {
     if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
     const rec = getDayRecord(getDayKey(currentDate));
@@ -626,30 +1214,20 @@
     if (!meal.text) return;
 
     const btn = document.getElementById(`btnCloud_${mealId}`);
-    const originalText = btn ? btn.innerHTML : '';
-    if (btn) {
-      btn.innerHTML = `<span class="animate-pulse">Thinking...</span>`;
-      btn.disabled = true;
-    }
+    const orig = btn ? btn.innerHTML : '';
+    if (btn) { btn.innerHTML = `<span class="animate-pulse">Thinking...</span>`; btn.disabled = true; }
 
     try {
       const est = await parseCloudAiMacros(meal.text);
       if (est) {
-        meal.cal = est.cal;
-        meal.p = est.p;
-        meal.c = est.c;
-        meal.f = est.f;
+        meal.cal = est.cal; meal.p = est.p; meal.c = est.c; meal.f = est.f;
         syncAutomations(rec);
         persist();
       }
     } catch (err) {
       alert(`API Error: ${err.message}`);
     } finally {
-      if (btn) {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        lucide.createIcons();
-      }
+      if (btn) { btn.innerHTML = orig; btn.disabled = false; lucide.createIcons(); }
     }
   }
 
@@ -661,44 +1239,9 @@
     persist();
   }
 
-  // STRICT FULL COMPLETION VALIDATOR
-  function evaluateDayStatus(rec, date) {
-    if (isDateBeforeStart(date)) return "unactivated";
-    if (isDateInFuture(date)) return "locked";
-
-    const hasBreach = Object.values(rec.boundaries || {}).some(v => v === true);
-    if (hasBreach) return "breached";
-
-    const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
-    let allActionsDone = true;
-
-    ACTIONS.forEach(a => {
-      if (a.weekdayOnly && isWeekend) return;
-      if (!rec.actions[a.id]) {
-        allActionsDone = false;
-      }
-    });
-
-    return allActionsDone ? "complete" : "pending";
-  }
-
-  function syncAutomations(rec) {
-    const vol = getWaterVolume(rec.water);
-    rec.actions['a_water'] = vol >= 4000;
-    rec.actions['a_drone'] = !!rec.drone.done;
-
-    const totalP = Object.values(rec.meals).reduce((s, m) => s + (Number(m.p) || 0), 0);
-    rec.actions['a_protein'] = totalP >= (userGoals.protein || 160);
-  }
-
-  function setBoundary(bId, val) {
-    if (isDateInFuture(currentDate) || isDateBeforeStart(currentDate)) return;
-    const rec = getDayRecord(getDayKey(currentDate));
-    rec.boundaries[bId] = val;
-    persist();
-  }
-
+  // ==========================================
   // RENDER PIPELINE
+  // ==========================================
   function render() {
     const key = getDayKey(currentDate);
     const rec = getDayRecord(key);
@@ -709,28 +1252,31 @@
     const isWeekend = (currentDate.getDay() === 0 || currentDate.getDay() === 6);
     const dayStatus = evaluateDayStatus(rec, currentDate);
 
-    document.getElementById('protocolStartNotice').innerText = `Protocol Start: ${new Date(START_DATE_KEY + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    // Global Date Headers
+    document.getElementById('protocolStartNotice').innerText = `Protocol Active: ${new Date(START_DATE_KEY + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
     document.getElementById('currentDateLabel').innerText = currentDate.toLocaleDateString(undefined, {
       month: 'short', day: 'numeric', year: 'numeric'
     });
     document.getElementById('dayBadge').innerText = isWeekend ? 'Weekend' : 'Weekday';
 
+    // Banner
     const banner = document.getElementById('statusBanner');
     if (isPrior) {
-      banner.className = 'mb-4 bg-slate-900 border border-slate-800 text-slate-400 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold';
+      banner.className = 'rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold border bg-slate-900 border-slate-800 text-slate-400';
       banner.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-slate-400"></i><span>Pre-Protocol Date: Official daily tracking starts tomorrow.</span>`;
       banner.classList.remove('hidden');
     } else if (isFuture) {
-      banner.className = 'mb-4 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold';
+      banner.className = 'rounded-xl p-3 flex items-center gap-2.5 text-xs font-semibold border bg-amber-500/10 border-amber-500/30 text-amber-300';
       banner.innerHTML = `<i data-lucide="lock" class="w-4 h-4 text-amber-400"></i><span>Future Date Locked: Directives unlock on this calendar day.</span>`;
       banner.classList.remove('hidden');
     } else {
       banner.classList.add('hidden');
     }
 
-    const contentWrap = document.getElementById('interactiveContent');
-    contentWrap.className = (isFuture || isPrior) ? 'space-y-5 locked-overlay' : 'space-y-5';
+    const todayWrap = document.getElementById('interactiveTodayWrap');
+    todayWrap.className = (isFuture || isPrior) ? 'space-y-4 locked-overlay' : 'space-y-4';
 
+    // Day Status KPI
     const statusMap = {
       unactivated: { text: "Unactivated", color: "text-slate-500" },
       locked: { text: "Locked", color: "text-slate-500" },
@@ -739,69 +1285,12 @@
       complete: { text: "100% Complete ✓", color: "text-emerald-400" }
     };
     document.getElementById('kpiDayStatus').innerText = statusMap[dayStatus].text;
-    document.getElementById('kpiDayStatus').className = `text-sm font-bold ${statusMap[dayStatus].color}`;
+    document.getElementById('kpiDayStatus').className = `text-xs font-extrabold ${statusMap[dayStatus].color}`;
 
-    // RENDER BOUNDARIES
-    const boundsContainer = document.getElementById('boundariesList');
-    boundsContainer.innerHTML = '';
-    BOUNDARIES.forEach(b => {
-      const isFailed = !isPrior && !isFuture && !!rec.boundaries[b.id];
-      const div = document.createElement('div');
-      div.className = `flex items-center justify-between p-3 rounded-xl border transition-all ${
-        isFailed ? 'bg-rose-950/20 border-rose-600/40' : 'bg-slate-950/40 border-slate-800'
-      }`;
-      div.innerHTML = `
-        <div class="pr-2">
-          <div class="text-xs font-bold ${isFailed ? 'text-rose-300' : 'text-slate-200'}">${b.label}</div>
-          <div class="text-[10px] text-slate-400">${b.desc}</div>
-        </div>
-        <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 p-1 rounded-lg">
-          <button onclick="setBoundary('${b.id}', false)" ${isPrior || isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
-            !isFailed && !isPrior && !isFuture ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-500 hover:text-slate-300'
-          }">Clean</button>
-          <button onclick="setBoundary('${b.id}', true)" ${isPrior || isFuture ? 'disabled' : ''} class="px-2.5 py-1 rounded text-[11px] font-bold transition ${
-            isFailed ? 'bg-rose-600 text-white' : 'text-slate-500 hover:text-rose-400'
-          }">Fail</button>
-        </div>
-      `;
-      boundsContainer.appendChild(div);
-    });
+    // Weigh-In Input
+    document.getElementById('todayWeightInput').value = rec.weight !== null ? rec.weight : '';
 
-    // RENDER ACTIONS
-    const actionsContainer = document.getElementById('actionsList');
-    actionsContainer.innerHTML = '';
-    ACTIONS.forEach(a => {
-      const isChecked = !isPrior && !isFuture && !!rec.actions[a.id];
-      const div = document.createElement('label');
-      div.className = `flex items-center justify-between p-3 rounded-xl border transition ${
-        isChecked ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/40 border-slate-800'
-      }`;
-
-      let extraBadge = (a.weekdayOnly && isWeekend) ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 ml-2">Weekend Off</span>' : '';
-
-      div.innerHTML = `
-        <div class="flex items-center gap-3">
-          <input type="checkbox" ${isChecked ? 'checked' : ''} ${isPrior || isFuture || a.isWaterLinked || a.isDroneLinked || a.isProteinLinked ? 'disabled' : ''} class="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 accent-emerald-500" />
-          <div>
-            <div class="text-xs font-bold text-slate-200 flex items-center">${a.label} ${extraBadge}</div>
-            <div class="text-[10px] text-slate-400">${a.desc}</div>
-          </div>
-        </div>
-        <div class="text-[11px] font-bold ${isChecked ? 'text-emerald-400' : 'text-slate-500'}">
-          ${(isPrior || isFuture) ? 'Locked' : (isChecked ? 'Done' : 'Required')}
-        </div>
-      `;
-
-      if (!isPrior && !isFuture && !a.isWaterLinked && !a.isDroneLinked && !a.isProteinLinked) {
-        div.querySelector('input').addEventListener('change', (e) => {
-          rec.actions[a.id] = e.target.checked;
-          persist();
-        });
-      }
-      actionsContainer.appendChild(div);
-    });
-
-    // RENDER WATER
+    // Water Renders
     const waterVol = (isPrior || isFuture) ? 0 : getWaterVolume(rec.water);
     document.getElementById('kpiWaterTotal').innerText = `${waterVol.toLocaleString()} ml`;
     document.getElementById('count1000').innerText = `${(isPrior || isFuture) ? 0 : (rec.water.b1000 || 0)}x`;
@@ -810,20 +1299,66 @@
     document.getElementById('waterFillBar').style.width = `${waterPct}%`;
     document.getElementById('waterStatusTag').innerText = `${waterPct}% (${waterVol}/4000 ml)`;
 
-    // RENDER DRONE SPRINT
-    const weekCount = getWeeklyDroneCount(currentDate);
-    const droneToday = !isPrior && !isFuture && !!rec.drone.done;
-    document.getElementById('droneWeeklyStatus').innerText = `This Week: ${weekCount} / 5 sessions logged`;
-    document.getElementById('droneTodayBtn').className = droneToday
-      ? 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-400'
-      : 'px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300';
-    document.getElementById('droneTodayBtn').innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i><span>${droneToday ? '1 Hr Done ✓' : 'Log 1 Hr'}</span>`;
-    document.getElementById('droneNotes').value = (isPrior || isFuture) ? '' : (rec.drone.notes || '');
-    for (let p = 1; p <= 5; p++) {
-      document.getElementById(`dronePip${p}`).className = p <= weekCount ? 'h-1.5 flex-1 rounded-full bg-indigo-500' : 'h-1.5 flex-1 rounded-full bg-slate-800';
-    }
+    // Actions Checklist
+    const actionsContainer = document.getElementById('actionsList');
+    actionsContainer.innerHTML = '';
+    ACTIONS.forEach(a => {
+      const isChecked = !isPrior && !isFuture && !!rec.actions[a.id];
+      const div = document.createElement('label');
+      div.className = `flex items-center justify-between p-3 rounded-xl border transition ${
+        isChecked ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/40 border-slate-800'
+      }`;
+      const extraBadge = (a.weekdayOnly && isWeekend) ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 ml-2">Weekend Off</span>' : '';
 
-    // RENDER MEALS & TOTAL MACROS WITH DUAL BUTTONS
+      div.innerHTML = `
+        <div class="flex items-center gap-3">
+          <input type="checkbox" ${isChecked ? 'checked' : ''} ${isPrior || isFuture || a.isWaterLinked || a.isDroneLinked || a.isProteinLinked || a.isWorkoutLinked || a.isPtLinked || a.isPrehabLinked ? 'disabled' : ''} class="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-slate-700 accent-emerald-500" />
+          <div>
+            <div class="text-xs font-bold text-slate-200 flex items-center">${a.label} ${extraBadge}</div>
+            <div class="text-[10px] text-slate-400">${a.desc}</div>
+          </div>
+        </div>
+        <div class="text-[10px] font-extrabold ${isChecked ? 'text-emerald-400' : 'text-slate-500'}">
+          ${(isPrior || isFuture) ? 'Locked' : (isChecked ? 'Done' : 'Required')}
+        </div>
+      `;
+
+      if (!isPrior && !isFuture && !a.isWaterLinked && !a.isDroneLinked && !a.isProteinLinked && !a.isWorkoutLinked && !a.isPtLinked && !a.isPrehabLinked) {
+        div.querySelector('input').addEventListener('change', (e) => {
+          rec.actions[a.id] = e.target.checked;
+          persist();
+        });
+      }
+      actionsContainer.appendChild(div);
+    });
+
+    // Boundaries
+    const boundsContainer = document.getElementById('boundariesList');
+    boundsContainer.innerHTML = '';
+    BOUNDARIES.forEach(b => {
+      const isFailed = !isPrior && !isFuture && !!rec.boundaries[b.id];
+      const div = document.createElement('div');
+      div.className = `flex items-center justify-between p-2.5 rounded-xl border transition-all ${
+        isFailed ? 'bg-rose-950/20 border-rose-600/40' : 'bg-slate-950/40 border-slate-800'
+      }`;
+      div.innerHTML = `
+        <div class="pr-2">
+          <div class="text-xs font-bold ${isFailed ? 'text-rose-300' : 'text-slate-200'}">${b.label}</div>
+          <div class="text-[9px] text-slate-400">${b.desc}</div>
+        </div>
+        <div class="flex items-center gap-1 bg-slate-900 border border-slate-800 p-0.5 rounded-lg">
+          <button onclick="setBoundary('${b.id}', false)" ${isPrior || isFuture ? 'disabled' : ''} class="px-2 py-0.5 rounded text-[10px] font-bold transition ${
+            !isFailed && !isPrior && !isFuture ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-500'
+          }">Clean</button>
+          <button onclick="setBoundary('${b.id}', true)" ${isPrior || isFuture ? 'disabled' : ''} class="px-2 py-0.5 rounded text-[10px] font-bold transition ${
+            isFailed ? 'bg-rose-600 text-white' : 'text-slate-500 hover:text-rose-400'
+          }">Fail</button>
+        </div>
+      `;
+      boundsContainer.appendChild(div);
+    });
+
+    // Meals
     const mealsContainer = document.getElementById('mealsContainer');
     mealsContainer.innerHTML = '';
     let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
@@ -852,54 +1387,25 @@
           type="text" 
           value="${mData.text || ''}" 
           ${isPrior || isFuture ? 'disabled' : ''}
-          placeholder="Describe your food (e.g. 8oz chicken, 2 eggs, avocado)..."
+          placeholder="Describe food (e.g. 8oz chicken, 2 eggs, avocado)..."
           onchange="updateMealField('${m.id}', 'text', this.value)"
           class="w-full bg-slate-900/80 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 placeholder-slate-600"
         />
 
-        <!-- DUAL ESTIMATION BUTTONS -->
         <div class="flex items-center gap-2">
-          <button 
-            type="button"
-            ${isPrior || isFuture ? 'disabled' : ''}
-            onclick="triggerLocalEst('${m.id}')"
-            title="Parse using built-in offline code"
-            class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-700 transition flex items-center justify-center gap-1"
-          >
-            <span>⚡ Local Est</span>
+          <button type="button" ${isPrior || isFuture ? 'disabled' : ''} onclick="triggerLocalEst('${m.id}')" class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-700 transition">
+            ⚡ Local Est
           </button>
-          
-          <button 
-            type="button"
-            id="btnCloud_${m.id}"
-            ${isPrior || isFuture ? 'disabled' : ''}
-            onclick="triggerCloudAiEst('${m.id}')"
-            title="Call cloud Gemini AI via API Key"
-            class="flex-1 py-1.5 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 hover:from-purple-900/60 hover:to-indigo-900/60 text-[10px] font-bold text-indigo-300 rounded-lg border border-indigo-500/40 transition flex items-center justify-center gap-1 shadow-sm"
-          >
-            <i data-lucide="sparkles" class="w-3 h-3 text-indigo-400"></i>
-            <span>✨ AI Cloud API</span>
+          <button type="button" id="btnCloud_${m.id}" ${isPrior || isFuture ? 'disabled' : ''} onclick="triggerCloudAiEst('${m.id}')" class="flex-1 py-1 bg-gradient-to-r from-purple-900/40 to-indigo-900/40 hover:from-purple-900/60 hover:to-indigo-900/60 text-[10px] font-bold text-indigo-300 rounded-lg border border-indigo-500/40 transition">
+            ✨ AI Cloud API
           </button>
         </div>
 
-        <!-- Manual Macro Adjustments -->
         <div class="grid grid-cols-4 gap-1.5 pt-1">
-          <div>
-            <span class="block text-[8px] text-slate-500 font-bold uppercase text-center mb-0.5">Cal</span>
-            <input type="number" value="${mData.cal || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'cal', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-white text-center font-bold" />
-          </div>
-          <div>
-            <span class="block text-[8px] text-amber-500 font-bold uppercase text-center mb-0.5">Prot</span>
-            <input type="number" value="${mData.p || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'p', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-amber-400 text-center font-bold" />
-          </div>
-          <div>
-            <span class="block text-[8px] text-cyan-500 font-bold uppercase text-center mb-0.5">Carb</span>
-            <input type="number" value="${mData.c || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-cyan-400 text-center font-bold" />
-          </div>
-          <div>
-            <span class="block text-[8px] text-rose-500 font-bold uppercase text-center mb-0.5">Fat</span>
-            <input type="number" value="${mData.f || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'f', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-rose-400 text-center font-bold" />
-          </div>
+          <div><input type="number" value="${mData.cal || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'cal', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-white text-center font-bold" /></div>
+          <div><input type="number" value="${mData.p || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'p', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-amber-400 text-center font-bold" /></div>
+          <div><input type="number" value="${mData.c || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-cyan-400 text-center font-bold" /></div>
+          <div><input type="number" value="${mData.f || ''}" ${isPrior || isFuture ? 'disabled' : ''} placeholder="0" onchange="updateMealField('${m.id}', 'f', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px] text-rose-400 text-center font-bold" /></div>
         </div>
       `;
       mealsContainer.appendChild(card);
@@ -909,23 +1415,258 @@
     document.getElementById('macroProt').innerText = `${totalP}g`;
     document.getElementById('macroCarb').innerText = `${totalC}g`;
     document.getElementById('macroFat').innerText = `${totalF}g`;
-
     document.getElementById('macroGoalCal').innerText = `/ ${userGoals.calories}`;
     document.getElementById('macroGoalProt').innerText = `/ ${userGoals.protein}g`;
     document.getElementById('macroGoalCarb').innerText = `/ ${userGoals.carbs}g`;
     document.getElementById('macroGoalFat').innerText = `/ ${userGoals.fat}g`;
-
     document.getElementById('kpiMacroSummary').innerText = `${totalCal} kcal • ${totalP}g P`;
 
-    if (currentTab === 'monthly') {
-      renderMonthlyCalendar();
+    // Tab 2: Matrix
+    if (currentMainTab === 'matrix') {
+      renderMatrixCalendar();
+    }
+
+    // Tab 3: Athletics
+    if (currentMainTab === 'athletics') {
+      renderAthleticsTab(rec);
+    }
+
+    // Tab 4: Academics
+    if (currentMainTab === 'academics') {
+      renderAcademicsTab(rec);
     }
 
     lucide.createIcons();
   }
 
-  // MONTHLY CALENDAR
-  function renderMonthlyCalendar() {
+  // ==========================================
+  // RENDER TAB: ATHLETICS
+  // ==========================================
+  function renderAthleticsTab(rec) {
+    // 1. PT & Prehab Weekly KPIs
+    const ptCount = getWeeklyStat('pt', currentDate);
+    document.getElementById('ptWeekTag').innerText = `${ptCount}/3 wk`;
+    document.getElementById('btnTogglePtToday').className = rec.pt 
+      ? "w-full py-1 rounded-lg text-xs font-bold border transition bg-emerald-600 text-white border-emerald-400"
+      : "w-full py-1 rounded-lg text-xs font-bold border transition bg-slate-800 text-slate-300 border-slate-700";
+    document.getElementById('btnTogglePtToday').innerText = rec.pt ? "PT Done Today ✓" : "Log Today's PT";
+
+    const prehabCount = getWeeklyStat('prehab', currentDate);
+    document.getElementById('prehabWeekTag').innerText = `${prehabCount}/4 wk`;
+    document.getElementById('btnTogglePrehabToday').className = rec.prehab
+      ? "w-full py-1 rounded-lg text-xs font-bold border transition bg-emerald-600 text-white border-emerald-400"
+      : "w-full py-1 rounded-lg text-xs font-bold border transition bg-slate-800 text-slate-300 border-slate-700";
+    document.getElementById('btnTogglePrehabToday').innerText = rec.prehab ? "Prehab Done ✓" : "Log Prehab";
+
+    // 2. Weight Chart Render
+    renderWeightChart();
+
+    // 3. LIFTOFF Workout Logger
+    const dayOfWeek = currentDate.getDay(); // 1 = Mon, 5 = Fri
+    const splitNames = { 1: "Mon: Push A", 2: "Tue: Pull A", 3: "Wed: Legs", 4: "Thu: Push B", 5: "Fri: Pull B" };
+    document.getElementById('suggestedSplitBadge').innerText = splitNames[dayOfWeek] ? `Recommended: ${splitNames[dayOfWeek]}` : "Weekend Recovery";
+
+    document.getElementById('currentSessionTitle').innerText = rec.workout.title || "Workout Session";
+    document.getElementById('workoutStatusTag').innerText = rec.workout.completed ? "Session Completed ✓" : "In Progress";
+    document.getElementById('workoutStatusTag').className = rec.workout.completed 
+      ? "ml-2 text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold"
+      : "ml-2 text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400";
+
+    document.getElementById('btnFinishWorkout').className = rec.workout.completed
+      ? "px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-bold"
+      : "px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-[11px] font-bold";
+    document.getElementById('btnFinishWorkout').innerText = rec.workout.completed ? "Mark Incomplete" : "Check Off Day";
+
+    const exercisesContainer = document.getElementById('workoutExercisesList');
+    exercisesContainer.innerHTML = '';
+
+    if (!rec.workout.exercises || rec.workout.exercises.length === 0) {
+      exercisesContainer.innerHTML = `
+        <div class="text-center py-6 border border-dashed border-slate-800 rounded-xl text-xs text-slate-500">
+          No lifts added yet. Choose a PPLPP preset above or tap "+ Add Movement".
+        </div>
+      `;
+      return;
+    }
+
+    rec.workout.exercises.forEach((ex, exIdx) => {
+      const card = document.createElement('div');
+      card.className = "bg-slate-950/60 border border-slate-800 rounded-xl p-3 space-y-2";
+
+      let setsHtml = '';
+      ex.sets.forEach((set, sIdx) => {
+        setsHtml += `
+          <div class="flex items-center gap-2 text-xs">
+            <span class="w-6 text-[10px] font-bold text-slate-500 text-center">S${sIdx + 1}</span>
+            <input 
+              type="number" 
+              step="2.5" 
+              value="${set.weight || ''}" 
+              placeholder="lbs" 
+              onchange="updateSetVal(${exIdx}, ${sIdx}, 'weight', this.value)"
+              class="flex-1 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200 text-center font-bold"
+            />
+            <span class="text-[10px] text-slate-500">×</span>
+            <input 
+              type="number" 
+              value="${set.reps || ''}" 
+              placeholder="reps" 
+              onchange="updateSetVal(${exIdx}, ${sIdx}, 'reps', this.value)"
+              class="flex-1 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200 text-center font-bold"
+            />
+            <button 
+              onclick="updateSetVal(${exIdx}, ${sIdx}, 'done', ${!set.done})"
+              class="w-7 h-7 rounded-lg border flex items-center justify-center font-bold ${
+                set.done ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-white'
+              }">
+              ✓
+            </button>
+            <button onclick="removeSet(${exIdx}, ${sIdx})" class="text-slate-600 hover:text-rose-400 text-xs px-1">✕</button>
+          </div>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between pb-1.5 border-b border-slate-900">
+          <div>
+            <div class="text-xs font-bold text-orange-300">${ex.name}</div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider">${ex.category}</div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="addSet(${exIdx})" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800">+ Set</button>
+            <button onclick="removeExercise(${exIdx})" class="text-slate-600 hover:text-rose-400 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+        <div class="space-y-1.5 pt-1">${setsHtml}</div>
+      `;
+      exercisesContainer.appendChild(card);
+    });
+  }
+
+  // SVG WEIGHT TREND PLOTTER
+  function renderWeightChart() {
+    const svg = document.getElementById('weightSvgChart');
+    const msg = document.getElementById('noWeightMsg');
+    svg.innerHTML = '';
+
+    const sortedDates = Object.keys(appData).filter(k => appData[k].weight !== null && appData[k].weight !== undefined).sort();
+    if (sortedDates.length === 0) {
+      msg.classList.remove('hidden');
+      document.getElementById('weightSummaryBadge').innerText = "-- lbs";
+      return;
+    }
+
+    msg.classList.add('hidden');
+    const points = sortedDates.map(k => ({ date: k, w: appData[k].weight }));
+    const latestW = points[points.length - 1].w;
+    document.getElementById('weightSummaryBadge').innerText = `${latestW} lbs`;
+
+    if (points.length === 1) {
+      svg.innerHTML = `<circle cx="50%" cy="50%" r="5" fill="#a78bfa" />`;
+      return;
+    }
+
+    const weights = points.map(p => p.w);
+    const minW = Math.min(...weights) - 2;
+    const maxW = Math.max(...weights) + 2;
+    const range = (maxW - minW) || 1;
+
+    const width = 360;
+    const height = 100;
+
+    let pathD = "";
+    points.forEach((p, i) => {
+      const x = (i / (points.length - 1)) * width + 10;
+      const y = height - ((p.w - minW) / range) * height + 10;
+      pathD += (i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+
+      // Plot point dot
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", x);
+      circle.setAttribute("cy", y);
+      circle.setAttribute("r", "3.5");
+      circle.setAttribute("fill", "#a78bfa");
+      svg.appendChild(circle);
+    });
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", pathD);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "#8b5cf6");
+    path.setAttribute("stroke-width", "2.5");
+    path.setAttribute("stroke-linecap", "round");
+    svg.prepend(path);
+  }
+
+  // ==========================================
+  // RENDER TAB: ACADEMICS & BRAINSTORM
+  // ==========================================
+  function renderAcademicsTab(rec) {
+    // 1. Drone Sync
+    const weekCount = getWeeklyStat('drone', currentDate);
+    document.getElementById('droneWeeklyStatusTab4').innerText = `This Week: ${weekCount} / 5 sessions logged`;
+    document.getElementById('droneTab4Btn').className = rec.drone.done
+      ? "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-400"
+      : "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 bg-slate-800/80 border-slate-700 text-slate-300";
+    document.getElementById('droneTab4Btn').innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i><span>${rec.drone.done ? '1 Hr Done ✓' : 'Log 1 Hr'}</span>`;
+
+    // 2. Course Notes
+    const courseContainer = document.getElementById('courseNotesList');
+    courseContainer.innerHTML = '';
+    const notes = rec.academics?.courseNotes || [];
+    if (notes.length === 0) {
+      courseContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-600 font-semibold border border-dashed border-slate-800 rounded-xl">No study notes logged today. Tap "+ Add Note" to log key course topics.</div>`;
+    } else {
+      notes.forEach((n, idx) => {
+        const div = document.createElement('div');
+        div.className = "bg-slate-950/60 border border-slate-800 rounded-xl p-2.5 space-y-1.5";
+        div.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-blue-300">${n.title}</span>
+            <button onclick="deleteCourseNote(${idx})" class="text-slate-600 hover:text-rose-400"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <textarea 
+            rows="2" 
+            placeholder="Key equations, problem sets worked on, derivations..." 
+            oninput="updateCourseNoteText(${idx}, this.value)" 
+            class="w-full bg-slate-900/60 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 placeholder-slate-600 resize-none"
+          >${n.text || ''}</textarea>
+        `;
+        courseContainer.appendChild(div);
+      });
+    }
+
+    // 3. Engineering Brainstorm Cards
+    const brainstormContainer = document.getElementById('brainstormCardsList');
+    brainstormContainer.innerHTML = '';
+    const cards = rec.academics?.brainstorms || [];
+    if (cards.length === 0) {
+      brainstormContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-600 font-semibold border border-dashed border-slate-800 rounded-xl">Brainstorm board clean. Tap "+ New Idea" to log hardware revisions.</div>`;
+    } else {
+      cards.forEach((c, idx) => {
+        const div = document.createElement('div');
+        div.className = "bg-slate-950/60 border border-slate-800 rounded-xl p-3 space-y-2";
+        div.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-purple-300">${c.title}</span>
+            <button onclick="deleteBrainstormCard(${idx})" class="text-slate-600 hover:text-rose-400"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+          </div>
+          <textarea 
+            rows="3" 
+            placeholder="Schematic details, flight controller pinouts, ESC specs, CAD dimensions..." 
+            oninput="updateBrainstormBody(${idx}, this.value)" 
+            class="w-full bg-slate-900/60 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 placeholder-slate-600 resize-none"
+          >${c.body || ''}</textarea>
+        `;
+        brainstormContainer.appendChild(div);
+      });
+    }
+  }
+
+  // ==========================================
+  // RENDER TAB: MATRIX
+  // ==========================================
+  function renderMatrixCalendar() {
     const grid = document.getElementById('monthGrid');
     grid.innerHTML = '';
 
@@ -960,7 +1701,7 @@
       const cell = document.createElement('button');
       cell.onclick = () => {
         currentDate = new Date(year, month, d);
-        switchTab('daily');
+        switchMainTab('today');
       };
 
       let bg = 'bg-slate-950/40 border-slate-900 text-slate-600';
@@ -1001,7 +1742,9 @@
     document.getElementById('monthlyAdherence').innerText = `${adherence}%`;
   }
 
-  // SETTINGS MODAL
+  // ==========================================
+  // SETTINGS MODAL & BACKUP
+  // ==========================================
   function toggleSettingsModal() {
     const modal = document.getElementById('settingsModal');
     modal.classList.toggle('hidden');
@@ -1021,12 +1764,11 @@
     userGoals.fat = parseInt(document.getElementById('settingGoalFat').value, 10) || 70;
     userGoals.apiKey = document.getElementById('settingApiKey').value.trim();
 
-    localStorage.setItem('protocol_macro_goals', JSON.stringify(userGoals));
+    localStorage.setItem('protocol_os_goals', JSON.stringify(userGoals));
     toggleSettingsModal();
     render();
   }
 
-  // BACKUP & RESTORE
   function exportData() {
     const payload = {
       startDate: START_DATE_KEY,
@@ -1036,7 +1778,7 @@
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
     const a = document.createElement('a');
     a.setAttribute("href", dataStr);
-    a.setAttribute("download", `protocol_backup_${getDayKey(new Date())}.json`);
+    a.setAttribute("download", `protocol_os_backup_${getDayKey(new Date())}.json`);
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1056,7 +1798,7 @@
           appData = imported;
         }
         persist();
-        alert('Data imported successfully!');
+        alert('All data restored successfully!');
       } catch (err) {
         alert('Invalid backup JSON file.');
       }
@@ -1064,6 +1806,7 @@
     reader.readAsText(file);
   }
 
+  // INITIAL BOOTSTRAP
   render();
 </script>
 </body>
